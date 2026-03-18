@@ -8,12 +8,11 @@ export function FreelancerLayout() {
       navItems={[
         { to: '/freelancer/dashboard', label: 'Dashboard', end: true },
         { to: '/freelancer/account', label: 'Profile Info' },
-        { to: '/freelancer/jobs', label: 'Find Jobs' },
-        { to: '/freelancer/proposals', label: 'My Proposals' },
-        { to: '/freelancer/contracts', label: 'Contracts' },
+        { to: '/freelancer/contracts', label: 'My Projects' },
+        { to: '/freelancer/jobs', label: 'My Jobs' },
+        { to: '/freelancer/settings', label: 'Account Settings' },
         { to: '/freelancer/messages', label: 'Messages', badgeType: 'messages' },
         { to: '/freelancer/notifications', label: 'Notifications', badgeType: 'notifications' },
-        { to: '/freelancer/settings', label: 'Settings' },
         { to: '/freelancer/support', label: 'Support' },
       ]}
     />

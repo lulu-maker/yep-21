@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom';
 import { getConversations } from '../../api/messagesApi';
 import { getNotifications } from '../../api/notificationsApi';
 import { useAuth } from '../../contexts/AuthContext';
+import { AuthenticatedMarketplaceHeader } from '../app/AuthenticatedMarketplaceHeader';
 
 interface NavItem {
   to: string;
@@ -94,13 +95,7 @@ export function RoleAccountLayout({ label, basePath, navItems }: RoleAccountLayo
           <button type="button" className="btn btn-ghost sidebar-toggle" onClick={() => setIsSidebarOpen((prev) => !prev)}>
             {isSidebarOpen ? 'Close menu' : 'Menu'}
           </button>
-          <div>
-            <p className="eyebrow">Authenticated area</p>
-            <h1 className="app-shell-title">{label}</h1>
-          </div>
-          <button type="button" className="btn btn-ghost desktop-logout" onClick={logout}>
-            Log Out
-          </button>
+          <AuthenticatedMarketplaceHeader />
         </header>
 
         <main className="app-content-main">

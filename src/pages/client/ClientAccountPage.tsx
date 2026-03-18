@@ -1,115 +1,77 @@
-import { useEffect, useMemo, useState } from 'react';
-import { getClientProfile, updateClientProfile } from '../../api/clientApi';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getClientProfile } from '../../api/clientApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ClientProfile } from '../../types/client';
 
-function calcCompletion(profile: ClientProfile) {
-  const checks = [profile.fullName.trim(), profile.country.trim(), profile.description.trim()];
-  return Math.round((checks.filter(Boolean).length / checks.length) * 100);
-}
-
 export function ClientAccountPage() {
-  const { user, updateUser } = useAuth();
-  const [profile, setProfile] = useState<ClientProfile>({
-    fullName: user?.fullName ?? '',
-    companyName: '',
-    country: '',
-    description: '',
-    avatarUrl: '',
-  });
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const { user } = useAuth();
+  const [profile, setProfile] = useState<ClientProfile | null>(null);
 
   useEffect(() => {
     void (async () => {
       const data = await getClientProfile();
-      setProfile((prev) => ({ ...prev, ...data, fullName: prev.fullName || data.fullName }));
-      setIsLoading(false);
+      setProfile(data);
     })();
   }, []);
 
-  const completion = useMemo(() => calcCompletion(profile), [profile]);
-
-  const save = async () => {
-    setIsSaving(true);
-    setMessage(null);
-
-    try {
-      await updateClientProfile(profile);
-      if (user) {
-        updateUser({ ...user, fullName: profile.fullName.trim() });
-      }
-      setMessage('Profile saved successfully.');
-    } catch {
-      setMessage('Unable to save. Please retry.');
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  if (isLoading) {
-    return <div className="container">Loading account...</div>;
+  if (!profile) {
+    return <div className="container">Loading profile info...</div>;
   }
 
+  const skills = profile.description
+    .split(/[,.]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 6);
+
   return (
-    <div className="container account-grid">
-      <section className="card-grid">
-        <article className="info-card">
-          <h2>Personal details</h2>
-          <p>{profile.fullName || '—'}</p>
-          <p>{user?.email || '—'}</p>
-        </article>
-        <article className="info-card">
-          <h2>Company profile</h2>
-          <p>{profile.companyName || 'No company added yet'}</p>
-          <p>{profile.country || 'Country not set'}</p>
-        </article>
-        <article className="info-card">
-          <h2>Profile completion</h2>
-          <p>{completion}% complete</p>
-        </article>
-        <article className="info-card">
-          <h2>Posted jobs</h2>
-          <p>0 active jobs (placeholder)</p>
-        </article>
+    <div className="container profile-page">
+      <div className="profile-page-head">
+        <h2>Profile Info</h2>
+        <Link to="/client/account/edit" className="btn btn-primary">
+          Edit Profile
+        </Link>
+      </div>
+
+      <section className="profile-hero info-card">
+        <div className="profile-cover" />
+        <div className="profile-summary">
+          <div className="profile-avatar">{(profile.fullName || user?.fullName || 'C').slice(0, 1).toUpperCase()}</div>
+          <div>
+            <h3>{profile.fullName || user?.fullName || 'Client user'}</h3>
+            <p className="meta">{profile.companyName || 'Company not added'} · {profile.country || 'Country not set'}</p>
+          </div>
+        </div>
       </section>
 
-      <section className="info-card form-stack">
-        <h2>Edit profile</h2>
-        <label>
-          Full name
-          <input
-            value={profile.fullName}
-            onChange={(e) => setProfile((prev) => ({ ...prev, fullName: e.target.value }))}
-          />
-        </label>
-        <label>
-          Company name
-          <input
-            value={profile.companyName}
-            onChange={(e) => setProfile((prev) => ({ ...prev, companyName: e.target.value }))}
-          />
-        </label>
-        <label>
-          Country
-          <input
-            value={profile.country}
-            onChange={(e) => setProfile((prev) => ({ ...prev, country: e.target.value }))}
-          />
-        </label>
-        <label>
-          Description
-          <textarea
-            rows={4}
-            value={profile.description}
-            onChange={(e) => setProfile((prev) => ({ ...prev, description: e.target.value }))}
-          />
-        </label>
-        <button type="button" className="btn btn-primary" onClick={() => void save()} disabled={isSaving}>
-          {isSaving ? 'Saving...' : 'Save profile'}
-        </button>
-        {message ? <p className="field-success">{message}</p> : null}
+      <section className="info-card">
+        <h3>Language</h3>
+        <p>English (Professional)</p>
+      </section>
+
+      <section className="info-card">
+        <h3>About</h3>
+        <p>{profile.description || 'No description provided yet.'}</p>
+      </section>
+
+      <section className="info-card">
+        <h3>Experience</h3>
+        <p>Client project owner and hiring manager.</p>
+      </section>
+
+      <section className="info-card">
+        <h3>Attachments</h3>
+        <p>No attachments uploaded yet.</p>
+      </section>
+
+      <section className="info-card">
+        <h3>Skills</h3>
+        <div className="chip-row">
+          {(skills.length ? skills : ['Project Planning', 'Hiring', 'Communication']).map((skill) => (
+            <span key={skill} className="chip">{skill}</span>
+          ))}
+        </div>
       </section>
     </div>
   );

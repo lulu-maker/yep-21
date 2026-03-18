@@ -12,18 +12,22 @@ import { AppPlaceholderPage } from './pages/app/AppPlaceholderPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
 import { BlogPage } from './pages/BlogPage';
 import { HomePage } from './pages/HomePage';
+import { SupportPage } from './pages/SupportPage';
 import { ForgotPasswordPage } from './pages/auth/ForgotPasswordPage';
 import { LoginPage } from './pages/auth/LoginPage';
 import { RegisterPage } from './pages/auth/RegisterPage';
 import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { ClientAccountPage } from './pages/client/ClientAccountPage';
+import { ClientContractsPage } from './pages/client/ClientContractsPage';
 import { ClientDashboardPage } from './pages/client/ClientDashboardPage';
+import { ClientMessagesPage } from './pages/client/ClientMessagesPage';
 import { ClientNotificationsPage } from './pages/client/ClientNotificationsPage';
 import { ClientOnboardingPage } from './pages/client/ClientOnboardingPage';
+import { ClientProfileEditPage } from './pages/client/ClientProfileEditPage';
+import { ClientProjectCreatePage } from './pages/client/ClientProjectCreatePage';
+import { ClientProjectsPage } from './pages/client/ClientProjectsPage';
 import { ClientProposalsPage } from './pages/client/ClientProposalsPage';
 import { ClientSettingsPage } from './pages/client/ClientSettingsPage';
-import { ClientContractsPage } from './pages/client/ClientContractsPage';
-import { ClientMessagesPage } from './pages/client/ClientMessagesPage';
 import { ClientJobCreatePage } from './pages/client/jobs/ClientJobCreatePage';
 import { ClientJobDetailPage } from './pages/client/jobs/ClientJobDetailPage';
 import { ClientJobEditPage } from './pages/client/jobs/ClientJobEditPage';
@@ -34,10 +38,15 @@ import { FreelancerDashboardPage } from './pages/freelancer/FreelancerDashboardP
 import { FreelancerMessagesPage } from './pages/freelancer/FreelancerMessagesPage';
 import { FreelancerNotificationsPage } from './pages/freelancer/FreelancerNotificationsPage';
 import { FreelancerOnboardingPage } from './pages/freelancer/FreelancerOnboardingPage';
+import { FreelancerProfileEditPage } from './pages/freelancer/FreelancerProfileEditPage';
 import { FreelancerSettingsPage } from './pages/freelancer/FreelancerSettingsPage';
 import { FreelancerJobDetailPage } from './pages/freelancer/jobs/FreelancerJobDetailPage';
 import { FreelancerJobsPage } from './pages/freelancer/jobs/FreelancerJobsPage';
 import { FreelancerProposalsPage } from './pages/freelancer/jobs/FreelancerProposalsPage';
+import { MarketplaceFreelancerDetailPage } from './pages/marketplace/MarketplaceFreelancerDetailPage';
+import { MarketplaceFreelancersPage } from './pages/marketplace/MarketplaceFreelancersPage';
+import { MarketplaceJobDetailPage } from './pages/marketplace/MarketplaceJobDetailPage';
+import { MarketplaceJobsPage } from './pages/marketplace/MarketplaceJobsPage';
 
 export function App() {
   return (
@@ -47,6 +56,11 @@ export function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:id" element={<BlogDetailPage />} />
+        <Route path="/jobs" element={<MarketplaceJobsPage />} />
+        <Route path="/jobs/:id" element={<MarketplaceJobDetailPage />} />
+        <Route path="/freelancers" element={<MarketplaceFreelancersPage />} />
+        <Route path="/freelancers/:id" element={<MarketplaceFreelancerDetailPage />} />
+        <Route path="/support" element={<SupportPage />} />
       </Route>
 
       <Route element={<RequireGuest />}>
@@ -64,13 +78,15 @@ export function App() {
             <Route path="/client/dashboard" element={<ClientDashboardPage />} />
             <Route path="/client/onboarding" element={<ClientOnboardingPage />} />
             <Route path="/client/account" element={<ClientAccountPage />} />
+            <Route path="/client/account/edit" element={<ClientProfileEditPage />} />
+            <Route path="/client/projects" element={<ClientProjectsPage />} />
+            <Route path="/client/projects/new" element={<ClientProjectCreatePage />} />
             <Route path="/client/jobs" element={<ClientJobsPage />} />
             <Route path="/client/jobs/new" element={<ClientJobCreatePage />} />
             <Route path="/client/jobs/:id" element={<ClientJobDetailPage />} />
             <Route path="/client/jobs/:id/edit" element={<ClientJobEditPage />} />
             <Route path="/client/proposals" element={<ClientProposalsPage />} />
             <Route path="/client/contracts" element={<ClientContractsPage />} />
-            <Route path="/client/projects" element={<ClientContractsPage />} />
             <Route path="/client/messages" element={<ClientMessagesPage />} />
             <Route path="/client/notifications" element={<ClientNotificationsPage />} />
             <Route path="/client/reports" element={<AppPlaceholderPage title="Reports" description="Client reports will surface hiring and spend insights." />} />
@@ -85,6 +101,7 @@ export function App() {
             <Route path="/freelancer/dashboard" element={<FreelancerDashboardPage />} />
             <Route path="/freelancer/onboarding" element={<FreelancerOnboardingPage />} />
             <Route path="/freelancer/account" element={<FreelancerAccountPage />} />
+            <Route path="/freelancer/account/edit" element={<FreelancerProfileEditPage />} />
             <Route path="/freelancer/jobs" element={<FreelancerJobsPage />} />
             <Route path="/freelancer/jobs/:id" element={<FreelancerJobDetailPage />} />
             <Route path="/freelancer/proposals" element={<FreelancerProposalsPage />} />
