@@ -4,24 +4,37 @@ import { getConversations } from '../../api/messagesApi';
 import { getNotifications } from '../../api/notificationsApi';
 import { useAuth } from '../../contexts/AuthContext';
 
+interface NavItem {
+  to: string;
+  label: string;
+  badgeType?: 'messages' | 'notifications';
+  end?: boolean;
+}
+
 interface RoleAccountLayoutProps {
   label: string;
   basePath: '/client' | '/freelancer';
-  navItems: Array<{ to: string; label: string; badge?: number }>;
+  navItems: NavItem[];
 }
 
 function Badge({ count }: { count?: number }) {
   if (!count) return null;
-  return <span className="nav-badge" aria-label={`${count} unread`}>{count}</span>;
+  return (
+    <span className="nav-badge" aria-label={`${count} unread`}>
+      {count}
+    </span>
+  );
 }
 
 export function RoleAccountLayout({ label, basePath, navItems }: RoleAccountLayoutProps) {
   const { logout, user } = useAuth();
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     if (!user) return;
+
     void (async () => {
       const [conversations, notifications] = await Promise.all([getConversations(user.id), getNotifications(user.id)]);
       setUnreadMessages(conversations.items.filter((item) => item.unreadBy.includes(user.id)).length);
@@ -34,36 +47,66 @@ export function RoleAccountLayout({ label, basePath, navItems }: RoleAccountLayo
       navItems.map((item) => ({
         ...item,
         badge:
-          item.to.endsWith('/messages') ? unreadMessages : item.to.endsWith('/notifications') ? unreadNotifications : item.badge,
+          item.badgeType === 'messages'
+            ? unreadMessages
+            : item.badgeType === 'notifications'
+              ? unreadNotifications
+              : undefined,
       })),
     [navItems, unreadMessages, unreadNotifications],
   );
 
   return (
-    <div className="client-shell">
-      <header className="site-header">
-        <div className="container header-inner app-header-inner">
-          <NavLink to={`${basePath}/dashboard`} className="brand">
-            {label}
+    <div className="app-shell">
+      <aside className={`app-sidebar ${isSidebarOpen ? 'open' : ''}`} aria-label={`${label} sidebar navigation`}>
+        <div className="app-sidebar-top">
+          <NavLink to={`${basePath}/dashboard`} className="brand" onClick={() => setIsSidebarOpen(false)}>
+            yep21
           </NavLink>
-          <nav className="nav-links app-nav-links" aria-label={`${label} navigation`}>
-            {computedItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className="nav-link" end={item.to.endsWith('/dashboard')}>
-                {item.label} <Badge count={item.badge} />
-              </NavLink>
-            ))}
-          </nav>
-          <div className="header-actions">
-            <span className="meta">{user?.email}</span>
-            <button type="button" className="btn btn-ghost" onClick={logout}>
-              Logout
-            </button>
-          </div>
+          <p className="meta">{label}</p>
         </div>
-      </header>
-      <main className="section app-main-section">
-        <Outlet />
-      </main>
+
+        <nav className="app-sidebar-nav">
+          {computedItems.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.end}
+              className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}
+              onClick={() => setIsSidebarOpen(false)}
+            >
+              <span>{item.label}</span>
+              <Badge count={item.badge} />
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="app-sidebar-footer">
+          <p className="meta truncate">{user?.email}</p>
+          <button type="button" className="btn btn-ghost sidebar-logout" onClick={logout}>
+            Log Out
+          </button>
+        </div>
+      </aside>
+
+      <div className="app-content-wrap">
+        <header className="app-content-header">
+          <button type="button" className="btn btn-ghost sidebar-toggle" onClick={() => setIsSidebarOpen((prev) => !prev)}>
+            {isSidebarOpen ? 'Close menu' : 'Menu'}
+          </button>
+          <div>
+            <p className="eyebrow">Authenticated area</p>
+            <h1 className="app-shell-title">{label}</h1>
+          </div>
+          <button type="button" className="btn btn-ghost desktop-logout" onClick={logout}>
+            Log Out
+          </button>
+        </header>
+
+        <main className="app-content-main">
+          <Outlet />
+        </main>
+      </div>
     </div>
   );
 }

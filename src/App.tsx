@@ -8,6 +8,7 @@ import { ClientLayout } from './layouts/ClientLayout';
 import { FreelancerLayout } from './layouts/FreelancerLayout';
 import { MarketingLayout } from './layouts/MarketingLayout';
 import { AboutPage } from './pages/AboutPage';
+import { AppPlaceholderPage } from './pages/app/AppPlaceholderPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
 import { BlogPage } from './pages/BlogPage';
 import { HomePage } from './pages/HomePage';
@@ -69,8 +70,12 @@ export function App() {
             <Route path="/client/jobs/:id/edit" element={<ClientJobEditPage />} />
             <Route path="/client/proposals" element={<ClientProposalsPage />} />
             <Route path="/client/contracts" element={<ClientContractsPage />} />
+            <Route path="/client/projects" element={<ClientContractsPage />} />
             <Route path="/client/messages" element={<ClientMessagesPage />} />
             <Route path="/client/notifications" element={<ClientNotificationsPage />} />
+            <Route path="/client/reports" element={<AppPlaceholderPage title="Reports" description="Client reports will surface hiring and spend insights." />} />
+            <Route path="/client/wallet" element={<AppPlaceholderPage title="Wallet" description="Wallet and payout history will appear here." />} />
+            <Route path="/client/support" element={<AppPlaceholderPage title="Support" description="Support tickets and help resources will appear here." />} />
             <Route path="/client/settings" element={<ClientSettingsPage />} />
           </Route>
         </Route>
@@ -86,6 +91,7 @@ export function App() {
             <Route path="/freelancer/contracts" element={<FreelancerContractsPage />} />
             <Route path="/freelancer/messages" element={<FreelancerMessagesPage />} />
             <Route path="/freelancer/notifications" element={<FreelancerNotificationsPage />} />
+            <Route path="/freelancer/support" element={<AppPlaceholderPage title="Support" description="Support and help center resources will appear here." />} />
             <Route path="/freelancer/settings" element={<FreelancerSettingsPage />} />
           </Route>
         </Route>

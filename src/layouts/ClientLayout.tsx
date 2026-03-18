@@ -6,14 +6,14 @@ export function ClientLayout() {
       label="Client Dashboard"
       basePath="/client"
       navItems={[
-        { to: '/client/dashboard', label: 'Dashboard' },
+        { to: '/client/dashboard', label: 'Dashboard', end: true },
+        { to: '/client/account', label: 'Profile Info' },
+        { to: '/client/projects', label: 'My Projects' },
         { to: '/client/jobs', label: 'My Jobs' },
-        { to: '/client/proposals', label: 'Proposals' },
-        { to: '/client/contracts', label: 'Contracts' },
-        { to: '/client/messages', label: 'Messages' },
-        { to: '/client/notifications', label: 'Notifications' },
-        { to: '/client/account', label: 'Account' },
-        { to: '/client/settings', label: 'Settings' },
+        { to: '/client/reports', label: 'Reports' },
+        { to: '/client/wallet', label: 'Wallet' },
+        { to: '/client/settings', label: 'Account Settings' },
+        { to: '/client/support', label: 'Support' },
       ]}
     />
   );
