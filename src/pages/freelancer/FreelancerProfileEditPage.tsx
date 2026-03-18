@@ -3,9 +3,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getFreelancerProfile, updateFreelancerProfile } from '../../api/freelancerApi';
 import { parseResumeWithOcr } from '../../api/ocrApi';
 import type { FreelancerProfile } from '../../types/freelancer';
+import { VerificationPanel } from '../../components/trust/VerificationPanel';
+import { useAuth } from '../../contexts/AuthContext';
 
 export function FreelancerProfileEditPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<FreelancerProfile | null>(null);
   const [skillsInput, setSkillsInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -86,6 +89,8 @@ export function FreelancerProfileEditPage() {
         {isParsingResume ? <p className="meta">Processing resume with OCR...</p> : null}
         {message ? <p className="field-error">{message}</p> : null}
       </section>
+
+      {user ? <VerificationPanel userId={user.id} /> : null}
     </div>
   );
 }

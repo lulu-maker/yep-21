@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { getClientProfile, updateClientProfile } from '../../api/clientApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ClientProfile } from '../../types/client';
+import { VerificationPanel } from '../../components/trust/VerificationPanel';
 
 export function ClientProfileEditPage() {
   const { user, updateUser } = useAuth();
@@ -77,6 +78,8 @@ export function ClientProfileEditPage() {
 
         {message ? <p className="field-success">{message}</p> : null}
       </section>
+
+      {user ? <VerificationPanel userId={user.id} /> : null}
     </div>
   );
 }

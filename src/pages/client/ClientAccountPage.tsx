@@ -3,16 +3,23 @@ import { Link } from 'react-router-dom';
 import { getClientProfile } from '../../api/clientApi';
 import { useAuth } from '../../contexts/AuthContext';
 import { VerificationBadge } from '../../components/marketplace/VerificationBadge';
+import { RatingSummary } from '../../components/trust/RatingSummary';
+import { getEntityReviews } from '../../api/reviewsApi';
 import type { ClientProfile } from '../../types/client';
 
 export function ClientAccountPage() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<ClientProfile | null>(null);
+  const [reviews, setReviews] = useState({ averageRating: 0, reviewCount: 0 });
 
   useEffect(() => {
     void (async () => {
       const data = await getClientProfile();
       setProfile(data);
+      if (user) {
+        const reviewsData = await getEntityReviews('client', user.id);
+        setReviews({ averageRating: reviewsData.averageRating, reviewCount: reviewsData.reviewCount });
+      }
     })();
   }, []);
 
@@ -48,6 +55,11 @@ export function ClientAccountPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="info-card">
+        <h3>Trust score</h3>
+        <RatingSummary averageRating={reviews.averageRating} reviewCount={reviews.reviewCount} />
       </section>
 
       <section className="info-card">

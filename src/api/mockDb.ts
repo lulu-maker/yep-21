@@ -6,6 +6,8 @@ import type { Job } from '../types/job';
 import type { Conversation, Message } from '../types/message';
 import type { AppNotification } from '../types/notification';
 import type { Proposal } from '../types/proposal';
+import type { Review } from '../types/review';
+import type { VerificationRecord } from '../types/verification';
 
 const USERS_KEY = 'yep21.users';
 const CLIENT_PROFILE_KEY = 'yep21.client.profile';
@@ -17,6 +19,8 @@ const CONTRACTS_KEY = 'yep21.contracts';
 const CONVERSATIONS_KEY = 'yep21.conversations';
 const MESSAGES_KEY = 'yep21.messages';
 const APP_NOTIFICATIONS_KEY = 'yep21.app.notifications';
+const VERIFICATIONS_KEY = 'yep21.verifications';
+const REVIEWS_KEY = 'yep21.reviews';
 
 export interface StoredUser extends SessionUser {
   password: string;
@@ -140,4 +144,21 @@ export function readAppNotifications() {
 
 export function saveAppNotifications(notifications: AppNotification[]) {
   writeJson(APP_NOTIFICATIONS_KEY, notifications);
+}
+
+
+export function readVerifications() {
+  return readJson<VerificationRecord[]>(VERIFICATIONS_KEY, []);
+}
+
+export function saveVerifications(records: VerificationRecord[]) {
+  writeJson(VERIFICATIONS_KEY, records);
+}
+
+export function readReviews() {
+  return readJson<Review[]>(REVIEWS_KEY, []);
+}
+
+export function saveReviews(reviews: Review[]) {
+  writeJson(REVIEWS_KEY, reviews);
 }

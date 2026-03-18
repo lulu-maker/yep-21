@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getContracts } from '../../api/contractsApi';
 import { useAuth } from '../../contexts/AuthContext';
+import { createReview, getReviewEligibility } from '../../api/reviewsApi';
 import type { Contract } from '../../types/contract';
 
 export function FreelancerContractsPage() {
@@ -31,6 +32,27 @@ export function FreelancerContractsPage() {
     void load();
   }, [user?.id]);
 
+
+  const onReview = async (contractId: string, revieweeId: string) => {
+    if (!user) return;
+    const eligibility = await getReviewEligibility(contractId, user.id);
+    if (!eligibility.eligible) {
+      window.alert(eligibility.reason);
+      return;
+    }
+    const rating = Number(window.prompt('Rate client from 1 to 5', '5'));
+    const comment = window.prompt('Add a short comment (optional)', '') ?? '';
+    await createReview({
+      reviewerId: user.id,
+      revieweeId,
+      contractId,
+      role: 'freelancer_to_client',
+      rating,
+      comment,
+    });
+    window.alert('Review submitted.');
+  };
+
   if (isLoading) return <div className="container">Loading contracts...</div>;
   if (error) return <div className="container state-box"><p>{error}</p><button type="button" className="btn btn-secondary" onClick={() => void load()}>Retry</button></div>;
 
@@ -50,6 +72,7 @@ export function FreelancerContractsPage() {
               </p>
               <p>Budget: ${item.bidAmount}</p>
               <p>Delivery: {item.deliveryDays} days</p>
+              {item.status === 'completed' ? <button className="btn btn-secondary" onClick={() => void onReview(item.id, item.clientId)}>Leave review</button> : null}
             </article>
           ))}
         </div>

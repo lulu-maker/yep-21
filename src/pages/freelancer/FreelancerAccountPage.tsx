@@ -1,18 +1,27 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getFreelancerProfile } from '../../api/freelancerApi';
+import { useAuth } from '../../contexts/AuthContext';
 import { VerificationBadge } from '../../components/marketplace/VerificationBadge';
+import { RatingSummary } from '../../components/trust/RatingSummary';
+import { getEntityReviews } from '../../api/reviewsApi';
 import type { FreelancerProfile } from '../../types/freelancer';
 
 export function FreelancerAccountPage() {
+  const { user } = useAuth();
   const [profile, setProfile] = useState<FreelancerProfile | null>(null);
+  const [reviews, setReviews] = useState({ averageRating: 0, reviewCount: 0 });
 
   useEffect(() => {
     void (async () => {
       const data = await getFreelancerProfile();
       setProfile(data);
+      if (user) {
+        const reviewsData = await getEntityReviews('freelancer', user.id);
+        setReviews({ averageRating: reviewsData.averageRating, reviewCount: reviewsData.reviewCount });
+      }
     })();
-  }, []);
+  }, [user?.id]);
 
   if (!profile) {
     return <div className="container">Loading profile info...</div>;
@@ -42,6 +51,11 @@ export function FreelancerAccountPage() {
             </div>
           </div>
         </div>
+      </section>
+
+      <section className="info-card">
+        <h3>Trust score</h3>
+        <RatingSummary averageRating={reviews.averageRating} reviewCount={reviews.reviewCount} />
       </section>
 
       <section className="info-card">

@@ -1261,3 +1261,22 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+.rating-summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  background: #fffbeb;
+  color: #92400e;
+  font-weight: 600;
+}
+
+.review-card {
+  margin-top: var(--space-2);
+}
+
+.review-rating {
+  letter-spacing: 0.08em;
+}

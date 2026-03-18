@@ -5,17 +5,23 @@ import { StatusBadge } from '../../components/marketplace/StatusBadge';
 import { VerificationBadge } from '../../components/marketplace/VerificationBadge';
 import { getMarketplaceJobById } from '../../api/jobsApi';
 import { useAuth } from '../../contexts/AuthContext';
+import { getEntityReviews } from '../../api/reviewsApi';
+import { RatingSummary } from '../../components/trust/RatingSummary';
+import { ReviewCard } from '../../components/trust/ReviewCard';
 import type { Job } from '../../types/job';
 
 export function MarketplaceJobDetailPage() {
   const { id = '' } = useParams();
   const { user } = useAuth();
   const [job, setJob] = useState<Job | null>(null);
+  const [reviews, setReviews] = useState<{ averageRating: number; reviewCount: number; items: any[] }>({ averageRating: 0, reviewCount: 0, items: [] });
 
   useEffect(() => {
     void (async () => {
       const item = await getMarketplaceJobById(id);
       setJob(item);
+      const reviewsData = await getEntityReviews('client', item.clientId);
+      setReviews(reviewsData as any);
     })();
   }, [id]);
 
@@ -59,6 +65,11 @@ export function MarketplaceJobDetailPage() {
       </section>
 
       <section className="info-card">
+        <h3>Company trust</h3>
+        <RatingSummary averageRating={reviews.averageRating} reviewCount={reviews.reviewCount} />
+      </section>
+
+      <section className="info-card">
         <h3>About</h3>
         <p>{job.description}</p>
       </section>
@@ -73,6 +84,11 @@ export function MarketplaceJobDetailPage() {
       <section className="info-card">
         <h3>Tags</h3>
         <div className="chip-row">{job.skills.map((skill) => <span key={skill} className="chip">{skill}</span>)}</div>
+      </section>
+
+      <section className="info-card">
+        <h3>Reviews</h3>
+        {reviews.items.length ? reviews.items.slice(0, 3).map((item) => <ReviewCard key={item.id} review={item} />) : <p>No reviews yet.</p>}
       </section>
     </div>
   );
