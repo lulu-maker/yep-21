@@ -1,5 +1,13 @@
 import type { Conversation, Message } from '../types/message';
-import { readContracts, readConversations, readMessages, readProposals, saveConversations, saveMessages } from './mockDb';
+import {
+  readContracts,
+  readConversations,
+  readMessages,
+  readProposals,
+  readUsers,
+  saveConversations,
+  saveMessages,
+} from './mockDb';
 import { pushNotification } from './notificationsApi';
 
 function wait(ms: number) {
@@ -82,12 +90,13 @@ export async function sendMessage(
     ),
   );
 
+  const receiver = readUsers().find((item) => item.id === receiverId);
   pushNotification({
     userId: receiverId,
     type: 'new_message',
     title: 'New message',
     body: content.slice(0, 90),
-    link: '/client/messages',
+    link: receiver?.role === 'freelancer' ? '/freelancer/messages' : '/client/messages',
   });
 
   return { id: message.id, content: message.content, createdAt };

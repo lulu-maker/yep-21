@@ -33,7 +33,7 @@ export function ClientProposalsPage() {
     if (!user) return;
     await updateProposalStatus(user.id, proposal.id, status);
     if (status === 'accepted') {
-      const created = await createContract(user.id, {
+      await createContract(user.id, {
         jobId: proposal.jobId,
         proposalId: proposal.id,
         freelancerId: proposal.freelancerId,

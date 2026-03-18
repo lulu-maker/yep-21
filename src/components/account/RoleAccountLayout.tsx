@@ -12,7 +12,7 @@ interface RoleAccountLayoutProps {
 
 function Badge({ count }: { count?: number }) {
   if (!count) return null;
-  return <span className="nav-badge">{count}</span>;
+  return <span className="nav-badge" aria-label={`${count} unread`}>{count}</span>;
 }
 
 export function RoleAccountLayout({ label, basePath, navItems }: RoleAccountLayoutProps) {
@@ -42,11 +42,13 @@ export function RoleAccountLayout({ label, basePath, navItems }: RoleAccountLayo
   return (
     <div className="client-shell">
       <header className="site-header">
-        <div className="container header-inner">
-          <p className="brand">{label}</p>
+        <div className="container header-inner app-header-inner">
+          <NavLink to={`${basePath}/dashboard`} className="brand">
+            {label}
+          </NavLink>
           <nav className="nav-links app-nav-links" aria-label={`${label} navigation`}>
             {computedItems.map((item) => (
-              <NavLink key={item.to} to={item.to} className="nav-link">
+              <NavLink key={item.to} to={item.to} className="nav-link" end={item.to.endsWith('/dashboard')}>
                 {item.label} <Badge count={item.badge} />
               </NavLink>
             ))}
@@ -59,7 +61,7 @@ export function RoleAccountLayout({ label, basePath, navItems }: RoleAccountLayo
           </div>
         </div>
       </header>
-      <main className="section">
+      <main className="section app-main-section">
         <Outlet />
       </main>
     </div>

@@ -649,3 +649,32 @@ select:focus-visible {
     grid-template-columns: 1fr;
   }
 }
+
+.app-header-inner {
+  align-items: flex-start;
+  padding: var(--space-3) 0;
+}
+
+.app-main-section {
+  padding-top: var(--space-10);
+}
+
+.info-card-unread {
+  border-color: var(--color-primary-500);
+  box-shadow: var(--shadow-sm);
+}
+
+@media (max-width: 900px) {
+  .app-header-inner {
+    align-items: stretch;
+  }
+
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .app-nav-links .nav-link {
+    white-space: nowrap;
+  }
+}
