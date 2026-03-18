@@ -5,9 +5,15 @@ interface RoleAccountLayoutProps {
   label: string;
   basePath: '/client' | '/freelancer';
   includeJobs?: boolean;
+  includeProposals?: boolean;
 }
 
-export function RoleAccountLayout({ label, basePath, includeJobs = false }: RoleAccountLayoutProps) {
+export function RoleAccountLayout({
+  label,
+  basePath,
+  includeJobs = false,
+  includeProposals = false,
+}: RoleAccountLayoutProps) {
   const { logout, user } = useAuth();
 
   return (
@@ -22,6 +28,11 @@ export function RoleAccountLayout({ label, basePath, includeJobs = false }: Role
             {includeJobs ? (
               <NavLink to={`${basePath}/jobs`} className="nav-link">
                 Jobs
+              </NavLink>
+            ) : null}
+            {includeProposals ? (
+              <NavLink to={`${basePath}/proposals`} className="nav-link">
+                Proposals
               </NavLink>
             ) : null}
             <NavLink to={`${basePath}/settings`} className="nav-link">

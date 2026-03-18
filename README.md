@@ -37,6 +37,7 @@ Freelancer-only:
 - `/freelancer/account`
 - `/freelancer/jobs`
 - `/freelancer/jobs/:id`
+- `/freelancer/proposals`
 - `/freelancer/settings`
 
 The API layer is mocked with contract-shaped service functions for auth, client/freelancer profile, notifications, and password updates.

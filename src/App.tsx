@@ -27,6 +27,7 @@ import { FreelancerOnboardingPage } from './pages/freelancer/FreelancerOnboardin
 import { FreelancerSettingsPage } from './pages/freelancer/FreelancerSettingsPage';
 import { FreelancerJobDetailPage } from './pages/freelancer/jobs/FreelancerJobDetailPage';
 import { FreelancerJobsPage } from './pages/freelancer/jobs/FreelancerJobsPage';
+import { FreelancerProposalsPage } from './pages/freelancer/jobs/FreelancerProposalsPage';
 
 export function App() {
   return (
@@ -66,6 +67,7 @@ export function App() {
             <Route path="/freelancer/account" element={<FreelancerAccountPage />} />
             <Route path="/freelancer/jobs" element={<FreelancerJobsPage />} />
             <Route path="/freelancer/jobs/:id" element={<FreelancerJobDetailPage />} />
+            <Route path="/freelancer/proposals" element={<FreelancerProposalsPage />} />
             <Route path="/freelancer/settings" element={<FreelancerSettingsPage />} />
           </Route>
         </Route>
