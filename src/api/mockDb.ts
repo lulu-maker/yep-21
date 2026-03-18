@@ -1,9 +1,11 @@
 import type { SessionUser } from '../types/auth';
 import type { ClientProfile, NotificationSettings } from '../types/client';
+import type { FreelancerProfile } from '../types/freelancer';
 
 const USERS_KEY = 'yep21.users';
-const PROFILE_KEY = 'yep21.client.profile';
-const NOTIFICATIONS_KEY = 'yep21.client.notifications';
+const CLIENT_PROFILE_KEY = 'yep21.client.profile';
+const FREELANCER_PROFILE_KEY = 'yep21.freelancer.profile';
+const NOTIFICATIONS_KEY = 'yep21.settings.notifications';
 
 export interface StoredUser extends SessionUser {
   password: string;
@@ -35,7 +37,7 @@ export function saveUsers(users: StoredUser[]) {
 }
 
 export function readClientProfile() {
-  return readJson<ClientProfile>(PROFILE_KEY, {
+  return readJson<ClientProfile>(CLIENT_PROFILE_KEY, {
     fullName: '',
     companyName: '',
     country: '',
@@ -45,7 +47,24 @@ export function readClientProfile() {
 }
 
 export function saveClientProfile(profile: ClientProfile) {
-  writeJson(PROFILE_KEY, profile);
+  writeJson(CLIENT_PROFILE_KEY, profile);
+}
+
+export function readFreelancerProfile() {
+  return readJson<FreelancerProfile>(FREELANCER_PROFILE_KEY, {
+    fullName: '',
+    title: '',
+    bio: '',
+    skills: [],
+    hourlyRate: 0,
+    country: '',
+    avatarUrl: '',
+    availability: 'open',
+  });
+}
+
+export function saveFreelancerProfile(profile: FreelancerProfile) {
+  writeJson(FREELANCER_PROFILE_KEY, profile);
 }
 
 export function readNotificationSettings() {

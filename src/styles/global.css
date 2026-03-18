@@ -373,7 +373,8 @@ h2 {
 }
 
 .form-stack input,
-.form-stack textarea {
+.form-stack textarea,
+.form-stack select {
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 0.65rem 0.75rem;

@@ -10,7 +10,7 @@ interface AuthContextValue {
   accessToken: string | null;
   refreshToken: string | null;
   isBootstrapping: boolean;
-  registerClient: (payload: RegisterRequest) => Promise<SessionUser>;
+  registerUser: (payload: RegisterRequest) => Promise<SessionUser>;
   loginUser: (payload: LoginRequest) => Promise<SessionUser>;
   logout: () => void;
   updateUser: (user: SessionUser) => void;
@@ -60,7 +60,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     );
   };
 
-  const registerClient = async (payload: RegisterRequest) => {
+  const registerUser = async (payload: RegisterRequest) => {
     const response = await register({ ...payload, email: normalizeEmail(payload.email) });
     persistSession(response.user, response.accessToken, response.refreshToken);
     return response.user;
@@ -85,7 +85,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, accessToken, refreshToken, isBootstrapping, registerClient, loginUser, logout, updateUser }),
+    () => ({ user, accessToken, refreshToken, isBootstrapping, registerUser, loginUser, logout, updateUser }),
     [user, accessToken, refreshToken, isBootstrapping],
   );
 

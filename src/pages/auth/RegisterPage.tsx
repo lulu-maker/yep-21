@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { EMAIL_REGEX, normalizeEmail } from '../../utils/validation';
+import type { UserRole } from '../../types/auth';
 
 interface FormValues {
   fullName: string;
@@ -10,15 +11,22 @@ interface FormValues {
   confirmPassword: string;
 }
 
+function nextRoute(role: UserRole) {
+  return role === 'freelancer' ? '/freelancer/onboarding' : '/client/onboarding';
+}
+
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { registerClient } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { registerUser } = useAuth();
   const [values, setValues] = useState<FormValues>({
     fullName: '',
     email: '',
     password: '',
     confirmPassword: '',
   });
+  const initialRole = searchParams.get('role') === 'client' ? 'client' : 'freelancer';
+  const [selectedRole, setSelectedRole] = useState<UserRole>(initialRole);
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,13 +61,13 @@ export function RegisterPage() {
     setFormError(null);
     setIsSubmitting(true);
     try {
-      await registerClient({
+      const user = await registerUser({
         fullName: values.fullName.trim(),
         email: normalizeEmail(values.email),
         password: values.password,
-        role: 'client',
+        role: selectedRole,
       });
-      navigate('/client/onboarding');
+      navigate(nextRoute(user.role));
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Unable to register.');
     } finally {
@@ -69,9 +77,17 @@ export function RegisterPage() {
 
   return (
     <>
-      <p className="eyebrow">Client Registration</p>
-      <h1>Create your client account</h1>
+      <p className="eyebrow">Registration</p>
+      <h1>Create your {selectedRole} account</h1>
       <form onSubmit={onSubmit} className="form-stack" noValidate>
+        <label>
+          Account type
+          <select value={selectedRole} onChange={(e) => setSelectedRole(e.target.value as UserRole)}>
+            <option value="freelancer">Freelancer</option>
+            <option value="client">Client</option>
+          </select>
+        </label>
+
         <label>
           Full name
           <input
@@ -109,7 +125,7 @@ export function RegisterPage() {
         </label>
         {formError ? <p className="field-error">{formError}</p> : null}
         <button type="submit" className="btn btn-primary" disabled={isSubmitting}>
-          {isSubmitting ? 'Creating account...' : 'Register as client'}
+          {isSubmitting ? 'Creating account...' : `Register as ${selectedRole}`}
         </button>
       </form>
       <p>

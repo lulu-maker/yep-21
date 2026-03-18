@@ -23,7 +23,7 @@ export async function register(payload: RegisterRequest): Promise<AuthResponse> 
     id: crypto.randomUUID(),
     fullName: payload.fullName,
     email,
-    role: 'client',
+    role: payload.role,
     onboardingCompleted: false,
   };
 

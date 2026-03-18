@@ -9,7 +9,11 @@ export function RequireGuest() {
   }
 
   if (user) {
-    return <Navigate to={user.onboardingCompleted ? '/client/account' : '/client/onboarding'} replace />;
+    if (user.role === 'client') {
+      return <Navigate to={user.onboardingCompleted ? '/client/account' : '/client/onboarding'} replace />;
+    }
+
+    return <Navigate to={user.onboardingCompleted ? '/freelancer/account' : '/freelancer/onboarding'} replace />;
   }
 
   return <Outlet />;

@@ -35,7 +35,7 @@ export function HomePage() {
               <a href="/register?role=client" className="btn btn-primary">
                 Find talent
               </a>
-              <a href="/jobs" className="btn btn-secondary">
+              <a href="/register?role=freelancer" className="btn btn-secondary">
                 Find work
               </a>
             </div>

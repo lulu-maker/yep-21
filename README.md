@@ -1,6 +1,6 @@
 # yep-21
 
-Marketing + client account foundation for the yep-21 freelance marketplace.
+Marketing + client/freelancer account foundation for the yep-21 freelance marketplace.
 
 ## Scripts
 
@@ -28,4 +28,9 @@ Client-only:
 - `/client/account`
 - `/client/settings`
 
-The API layer is mocked with contract-shaped service functions for auth, client profile, notifications, and password updates.
+Freelancer-only:
+- `/freelancer/onboarding`
+- `/freelancer/account`
+- `/freelancer/settings`
+
+The API layer is mocked with contract-shaped service functions for auth, client/freelancer profile, notifications, and password updates.

@@ -3,6 +3,13 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { EMAIL_REGEX, normalizeEmail } from '../../utils/validation';
 
+function accountRoute(role: 'client' | 'freelancer', onboardingCompleted: boolean) {
+  if (role === 'client') {
+    return onboardingCompleted ? '/client/account' : '/client/onboarding';
+  }
+  return onboardingCompleted ? '/freelancer/account' : '/freelancer/onboarding';
+}
+
 export function LoginPage() {
   const { loginUser } = useAuth();
   const navigate = useNavigate();
@@ -31,7 +38,7 @@ export function LoginPage() {
     try {
       const user = await loginUser({ email: normalized, password });
       const from = (location.state as { from?: string } | null)?.from;
-      navigate(from || (user.onboardingCompleted ? '/client/account' : '/client/onboarding'));
+      navigate(from || accountRoute(user.role, user.onboardingCompleted));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed.');
     } finally {
@@ -42,7 +49,7 @@ export function LoginPage() {
   return (
     <>
       <p className="eyebrow">Welcome back</p>
-      <h1>Client login</h1>
+      <h1>Account login</h1>
       <form className="form-stack" onSubmit={onSubmit} noValidate>
         <label>
           Email

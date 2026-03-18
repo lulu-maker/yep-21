@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { RequireAuth } from './components/guards/RequireAuth';
 import { RequireClient } from './components/guards/RequireClient';
+import { RequireFreelancer } from './components/guards/RequireFreelancer';
 import { RequireGuest } from './components/guards/RequireGuest';
 import { AuthLayout } from './layouts/AuthLayout';
 import { ClientLayout } from './layouts/ClientLayout';
+import { FreelancerLayout } from './layouts/FreelancerLayout';
 import { MarketingLayout } from './layouts/MarketingLayout';
 import { AboutPage } from './pages/AboutPage';
 import { BlogDetailPage } from './pages/BlogDetailPage';
@@ -16,6 +18,9 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { ClientAccountPage } from './pages/client/ClientAccountPage';
 import { ClientOnboardingPage } from './pages/client/ClientOnboardingPage';
 import { ClientSettingsPage } from './pages/client/ClientSettingsPage';
+import { FreelancerAccountPage } from './pages/freelancer/FreelancerAccountPage';
+import { FreelancerOnboardingPage } from './pages/freelancer/FreelancerOnboardingPage';
+import { FreelancerSettingsPage } from './pages/freelancer/FreelancerSettingsPage';
 
 export function App() {
   return (
@@ -42,6 +47,14 @@ export function App() {
             <Route path="/client/onboarding" element={<ClientOnboardingPage />} />
             <Route path="/client/account" element={<ClientAccountPage />} />
             <Route path="/client/settings" element={<ClientSettingsPage />} />
+          </Route>
+        </Route>
+
+        <Route element={<RequireFreelancer />}>
+          <Route element={<FreelancerLayout />}>
+            <Route path="/freelancer/onboarding" element={<FreelancerOnboardingPage />} />
+            <Route path="/freelancer/account" element={<FreelancerAccountPage />} />
+            <Route path="/freelancer/settings" element={<FreelancerSettingsPage />} />
           </Route>
         </Route>
       </Route>
