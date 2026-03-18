@@ -4,9 +4,10 @@ import { useAuth } from '../../contexts/AuthContext';
 interface RoleAccountLayoutProps {
   label: string;
   basePath: '/client' | '/freelancer';
+  includeJobs?: boolean;
 }
 
-export function RoleAccountLayout({ label, basePath }: RoleAccountLayoutProps) {
+export function RoleAccountLayout({ label, basePath, includeJobs = false }: RoleAccountLayoutProps) {
   const { logout, user } = useAuth();
 
   return (
@@ -18,6 +19,11 @@ export function RoleAccountLayout({ label, basePath }: RoleAccountLayoutProps) {
             <NavLink to={`${basePath}/account`} className="nav-link">
               Account
             </NavLink>
+            {includeJobs ? (
+              <NavLink to={`${basePath}/jobs`} className="nav-link">
+                Jobs
+              </NavLink>
+            ) : null}
             <NavLink to={`${basePath}/settings`} className="nav-link">
               Settings
             </NavLink>

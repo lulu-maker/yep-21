@@ -18,6 +18,10 @@ import { ResetPasswordPage } from './pages/auth/ResetPasswordPage';
 import { ClientAccountPage } from './pages/client/ClientAccountPage';
 import { ClientOnboardingPage } from './pages/client/ClientOnboardingPage';
 import { ClientSettingsPage } from './pages/client/ClientSettingsPage';
+import { ClientJobCreatePage } from './pages/client/jobs/ClientJobCreatePage';
+import { ClientJobDetailPage } from './pages/client/jobs/ClientJobDetailPage';
+import { ClientJobEditPage } from './pages/client/jobs/ClientJobEditPage';
+import { ClientJobsPage } from './pages/client/jobs/ClientJobsPage';
 import { FreelancerAccountPage } from './pages/freelancer/FreelancerAccountPage';
 import { FreelancerOnboardingPage } from './pages/freelancer/FreelancerOnboardingPage';
 import { FreelancerSettingsPage } from './pages/freelancer/FreelancerSettingsPage';
@@ -46,6 +50,10 @@ export function App() {
           <Route element={<ClientLayout />}>
             <Route path="/client/onboarding" element={<ClientOnboardingPage />} />
             <Route path="/client/account" element={<ClientAccountPage />} />
+            <Route path="/client/jobs" element={<ClientJobsPage />} />
+            <Route path="/client/jobs/new" element={<ClientJobCreatePage />} />
+            <Route path="/client/jobs/:id" element={<ClientJobDetailPage />} />
+            <Route path="/client/jobs/:id/edit" element={<ClientJobEditPage />} />
             <Route path="/client/settings" element={<ClientSettingsPage />} />
           </Route>
         </Route>

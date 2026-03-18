@@ -1,11 +1,13 @@
 import type { SessionUser } from '../types/auth';
 import type { ClientProfile, NotificationSettings } from '../types/client';
 import type { FreelancerProfile } from '../types/freelancer';
+import type { Job } from '../types/job';
 
 const USERS_KEY = 'yep21.users';
 const CLIENT_PROFILE_KEY = 'yep21.client.profile';
 const FREELANCER_PROFILE_KEY = 'yep21.freelancer.profile';
 const NOTIFICATIONS_KEY = 'yep21.settings.notifications';
+const JOBS_KEY = 'yep21.jobs';
 
 export interface StoredUser extends SessionUser {
   password: string;
@@ -77,4 +79,13 @@ export function readNotificationSettings() {
 
 export function saveNotificationSettings(settings: NotificationSettings) {
   writeJson(NOTIFICATIONS_KEY, settings);
+}
+
+
+export function readJobs() {
+  return readJson<Job[]>(JOBS_KEY, []);
+}
+
+export function saveJobs(jobs: Job[]) {
+  writeJson(JOBS_KEY, jobs);
 }

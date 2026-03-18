@@ -26,6 +26,10 @@ Auth:
 Client-only:
 - `/client/onboarding`
 - `/client/account`
+- `/client/jobs`
+- `/client/jobs/new`
+- `/client/jobs/:id`
+- `/client/jobs/:id/edit`
 - `/client/settings`
 
 Freelancer-only:
