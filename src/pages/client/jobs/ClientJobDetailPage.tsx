@@ -92,6 +92,9 @@ export function ClientJobDetailPage() {
           <button type="button" className="btn btn-ghost" onClick={() => void onStatus('closed')}>
             Close
           </button>
+          <Link to="/client/proposals" className="btn btn-secondary">
+            Review Proposals
+          </Link>
           <button type="button" className="btn btn-ghost" onClick={() => void onDelete()}>
             Delete
           </button>

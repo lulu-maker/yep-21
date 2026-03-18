@@ -1,3 +1,5 @@
+export type ContractStatus = 'active' | 'completed' | 'cancelled';
+
 export interface Contract {
   id: string;
   jobId: string;
@@ -7,5 +9,11 @@ export interface Contract {
   bidAmount: number;
   deliveryDays: number;
   createdAt: string;
-  status: 'active';
+  status: ContractStatus;
+}
+
+export interface CreateContractPayload {
+  jobId: string;
+  proposalId: string;
+  freelancerId: string;
 }

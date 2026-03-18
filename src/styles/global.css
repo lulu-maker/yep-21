@@ -581,3 +581,71 @@ select:focus-visible {
   color: #065f46;
   border-color: #a7f3d0;
 }
+
+.app-nav-links {
+  flex-wrap: wrap;
+}
+
+.nav-badge {
+  background: var(--color-primary-500);
+  color: white;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  margin-left: 6px;
+  padding: 0 7px;
+}
+
+.stats-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.messaging-grid {
+  grid-template-columns: 320px 1fr;
+  align-items: start;
+}
+
+.conversation-item {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
+  margin-bottom: var(--space-2);
+}
+
+.conversation-item.active {
+  border-color: var(--color-primary-500);
+  background: var(--color-primary-100);
+}
+
+.thread-list {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.chat-bubble {
+  background: var(--color-surface);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+}
+
+.chat-bubble.mine {
+  background: var(--color-primary-100);
+  justify-self: end;
+}
+
+.message-compose {
+  display: grid;
+  gap: var(--space-2);
+}
+
+@media (max-width: 900px) {
+  .messaging-grid {
+    grid-template-columns: 1fr;
+  }
+}

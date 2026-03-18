@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getFreelancerProfile, updateFreelancerProfile } from '../../api/freelancerApi';
+import { parseResumeWithOcr } from '../../api/ocrApi';
 import type { FreelancerProfile } from '../../types/freelancer';
 
 function completion(profile: FreelancerProfile) {
@@ -19,6 +20,7 @@ export function FreelancerAccountPage() {
   const [profile, setProfile] = useState<FreelancerProfile | null>(null);
   const [skillsInput, setSkillsInput] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+  const [isParsingResume, setIsParsingResume] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,6 +59,35 @@ export function FreelancerAccountPage() {
     }
   };
 
+  const onResumeUpload = async (file: File | null) => {
+    if (!profile || !file) return;
+    setIsParsingResume(true);
+    setMessage(null);
+    try {
+      const parsed = await parseResumeWithOcr(file);
+      const shouldFill = window.confirm('Apply extracted resume data to your profile fields?');
+      if (!shouldFill) {
+        return;
+      }
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              fullName: parsed.name || prev.fullName,
+              bio: parsed.experience || prev.bio,
+              skills: prev.skills.length ? prev.skills : parsed.skills,
+            }
+          : prev,
+      );
+      setSkillsInput((prev) => (prev.trim() ? prev : parsed.skills.join(', ')));
+      setMessage('Resume parsed. Review fields before saving.');
+    } catch (err) {
+      setMessage(err instanceof Error ? err.message : 'Unable to parse resume file.');
+    } finally {
+      setIsParsingResume(false);
+    }
+  };
+
   if (!profile) {
     return <div className="container">Loading freelancer account...</div>;
   }
@@ -85,6 +116,11 @@ export function FreelancerAccountPage() {
 
       <section className="info-card form-stack">
         <h2>Edit freelancer profile</h2>
+        <label>
+          Resume (PDF/DOC/DOCX)
+          <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => void onResumeUpload(e.target.files?.[0] ?? null)} disabled={isParsingResume} />
+        </label>
+        {isParsingResume ? <p className="meta">Running OCR extraction...</p> : null}
         <label>
           Full name
           <input value={profile.fullName} onChange={(e) => setProfile((prev) => (prev ? { ...prev, fullName: e.target.value } : prev))} />

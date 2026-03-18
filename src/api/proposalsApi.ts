@@ -1,5 +1,6 @@
-import type { Proposal, ProposalPayload } from '../types/proposal';
+import type { Proposal, ProposalPayload, ProposalStatus } from '../types/proposal';
 import { readJobs, readProposals, saveProposals } from './mockDb';
+import { pushNotification } from './notificationsApi';
 
 function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -58,6 +59,15 @@ export async function createProposal(jobId: string, freelancerId: string, payloa
 
   proposals.unshift(proposal);
   saveProposals(proposals);
+
+  pushNotification({
+    userId: job.clientId,
+    type: 'proposal_received',
+    title: 'New proposal received',
+    body: `A freelancer submitted a proposal for ${job.title}.`,
+    link: `/client/jobs/${job.id}/proposals`,
+  });
+
   return proposal;
 }
 
@@ -69,4 +79,55 @@ export async function getFreelancerProposals(freelancerId: string): Promise<Prop
 export async function getFreelancerProposalByJob(jobId: string, freelancerId: string): Promise<Proposal | null> {
   await wait(180);
   return readProposals().find((item) => item.jobId === jobId && item.freelancerId === freelancerId) ?? null;
+}
+
+export async function getClientProposals(clientId: string): Promise<Proposal[]> {
+  await wait(200);
+  const ownedJobIds = new Set(readJobs().filter((item) => item.clientId === clientId).map((item) => item.id));
+  return readProposals().filter((item) => ownedJobIds.has(item.jobId));
+}
+
+export async function getJobProposals(clientId: string, jobId: string): Promise<Proposal[]> {
+  await wait(200);
+  const job = readJobs().find((item) => item.id === jobId);
+  if (!job) {
+    throw new Error('Job not found.');
+  }
+  if (job.clientId !== clientId) {
+    throw new Error('Forbidden: you do not own this job.');
+  }
+
+  return readProposals().filter((item) => item.jobId === jobId);
+}
+
+export async function updateProposalStatus(
+  clientId: string,
+  proposalId: string,
+  status: Exclude<ProposalStatus, 'pending'>,
+): Promise<{ success: true }> {
+  await wait(220);
+  const proposals = readProposals();
+  const proposal = proposals.find((item) => item.id === proposalId);
+
+  if (!proposal) {
+    throw new Error('Proposal not found.');
+  }
+
+  const job = readJobs().find((item) => item.id === proposal.jobId);
+  if (!job || job.clientId !== clientId) {
+    throw new Error('Forbidden: proposal is not for your job.');
+  }
+
+  const next = proposals.map((item) => (item.id === proposalId ? { ...item, status } : item));
+  saveProposals(next);
+
+  pushNotification({
+    userId: proposal.freelancerId,
+    type: status === 'accepted' ? 'proposal_accepted' : 'proposal_rejected',
+    title: `Proposal ${status}`,
+    body: `Your proposal for ${job.title} was ${status}.`,
+    link: '/freelancer/proposals',
+  });
+
+  return { success: true };
 }

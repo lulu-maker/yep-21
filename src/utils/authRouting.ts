@@ -8,10 +8,10 @@ export function roleOnboardingPath(role: UserRole) {
   return `${roleBasePath(role)}/onboarding`;
 }
 
-export function roleAccountPath(role: UserRole) {
-  return `${roleBasePath(role)}/account`;
+export function roleDashboardPath(role: UserRole) {
+  return `${roleBasePath(role)}/dashboard`;
 }
 
 export function routeForAuthenticatedUser(role: UserRole, onboardingCompleted: boolean) {
-  return onboardingCompleted ? roleAccountPath(role) : roleOnboardingPath(role);
+  return onboardingCompleted ? roleDashboardPath(role) : roleOnboardingPath(role);
 }
