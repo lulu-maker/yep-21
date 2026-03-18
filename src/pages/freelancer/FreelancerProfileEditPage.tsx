@@ -76,6 +76,10 @@ export function FreelancerProfileEditPage() {
         <label>Experience<textarea rows={3} placeholder="List your work experience" /></label>
         <label>Attachments<div className="upload-box">Drop files or click to upload</div></label>
         <label>Skills<input value={skillsInput} onChange={(e) => setSkillsInput(e.target.value)} /></label>
+        <div className="two-col-grid">
+          <label>Availability<select value={profile.availability} onChange={(e) => setProfile((prev) => (prev ? { ...prev, availability: e.target.value as typeof prev.availability } : prev))}><option value="open_for_work">Open for work</option><option value="partly_available">Partly available</option><option value="unavailable">Unavailable</option></select></label>
+          <label>Verification status<select value={profile.verificationStatus} onChange={(e) => setProfile((prev) => (prev ? { ...prev, verificationStatus: e.target.value as typeof prev.verificationStatus } : prev))}><option value="unverified">Unverified</option><option value="pending">Pending</option><option value="verified">Verified</option><option value="rejected">Rejected</option></select></label>
+        </div>
         <label>Resume upload (OCR)
           <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => void onResumeUpload(e.target.files?.[0] ?? null)} disabled={isParsingResume} />
         </label>

@@ -47,7 +47,7 @@ export function ClientDashboardPage() {
   const cards = useMemo(
     () => [
       { to: '/client/account', title: 'Profile Info', description: 'Manage your profile and company details.', icon: '👤' },
-      { to: '/client/jobs', title: 'My Jobs', description: `${stats.jobs} jobs currently listed.`, icon: '📄' },
+      { to: '/client/projects', title: 'My Projects', description: `${stats.contracts} active project contracts.`, icon: '📄' },
       { to: '/client/reports', title: 'Reports', description: `${stats.proposals} proposals tracked.`, icon: '📊' },
       { to: '/client/wallet', title: 'Wallet', description: `${stats.contracts} active contract payments.`, icon: '💼' },
       { to: '/client/settings', title: 'Account Settings', description: `${stats.unreadNotifications} notifications need review.`, icon: '⚙️' },

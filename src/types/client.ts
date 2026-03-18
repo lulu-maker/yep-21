@@ -1,9 +1,14 @@
+export type VerificationStatus = 'unverified' | 'pending' | 'verified' | 'rejected';
+export type ActivityStatus = 'active' | 'inactive';
+
 export interface ClientProfile {
   fullName: string;
   companyName: string;
   country: string;
   description: string;
   avatarUrl: string;
+  activityStatus: ActivityStatus;
+  verificationStatus: VerificationStatus;
 }
 
 export interface NotificationSettings {

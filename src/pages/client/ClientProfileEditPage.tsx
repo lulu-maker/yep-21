@@ -13,6 +13,8 @@ export function ClientProfileEditPage() {
     country: '',
     description: '',
     avatarUrl: '',
+    activityStatus: 'active',
+    verificationStatus: 'unverified',
   });
   const [skills, setSkills] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -68,6 +70,11 @@ export function ClientProfileEditPage() {
         <label>Experience<textarea rows={3} placeholder="Add your experience" /></label>
         <label>Attachments<div className="upload-box">Drop files or click to upload</div></label>
         <label>Skills<input placeholder="Add comma-separated skills" /></label>
+        <div className="two-col-grid">
+          <label>Activity status<select value={profile.activityStatus} onChange={(e) => setProfile((prev) => ({ ...prev, activityStatus: e.target.value as 'active' | 'inactive' }))}><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
+          <label>Verification status<select value={profile.verificationStatus} onChange={(e) => setProfile((prev) => ({ ...prev, verificationStatus: e.target.value as 'unverified' | 'pending' | 'verified' | 'rejected' }))}><option value="unverified">Unverified</option><option value="pending">Pending</option><option value="verified">Verified</option><option value="rejected">Rejected</option></select></label>
+        </div>
+
         {message ? <p className="field-success">{message}</p> : null}
       </section>
     </div>

@@ -54,6 +54,8 @@ export function readClientProfile() {
     country: '',
     description: '',
     avatarUrl: '',
+    activityStatus: 'active',
+    verificationStatus: 'unverified',
   });
 }
 
@@ -70,7 +72,9 @@ export function readFreelancerProfile() {
     hourlyRate: 0,
     country: '',
     avatarUrl: '',
-    availability: 'open',
+    availability: 'open_for_work',
+    activityStatus: 'active',
+    verificationStatus: 'unverified',
   });
 }
 

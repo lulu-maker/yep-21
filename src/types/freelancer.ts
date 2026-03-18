@@ -1,3 +1,7 @@
+import type { ActivityStatus, VerificationStatus } from './client';
+
+export type FreelancerAvailability = 'open_for_work' | 'partly_available' | 'unavailable' | 'open' | 'limited';
+
 export interface FreelancerProfile {
   fullName: string;
   title: string;
@@ -6,5 +10,7 @@ export interface FreelancerProfile {
   hourlyRate: number;
   country: string;
   avatarUrl: string;
-  availability: 'open' | 'limited' | 'unavailable';
+  availability: FreelancerAvailability;
+  activityStatus: ActivityStatus;
+  verificationStatus: VerificationStatus;
 }

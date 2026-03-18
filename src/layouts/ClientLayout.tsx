@@ -9,7 +9,6 @@ export function ClientLayout() {
         { to: '/client/dashboard', label: 'Dashboard', end: true },
         { to: '/client/account', label: 'Profile Info' },
         { to: '/client/projects', label: 'My Projects' },
-        { to: '/client/jobs', label: 'My Jobs' },
         { to: '/client/reports', label: 'Reports' },
         { to: '/client/wallet', label: 'Wallet' },
         { to: '/client/settings', label: 'Account Settings' },

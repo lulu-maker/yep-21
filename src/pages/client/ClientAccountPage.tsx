@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getClientProfile } from '../../api/clientApi';
 import { useAuth } from '../../contexts/AuthContext';
+import { VerificationBadge } from '../../components/marketplace/VerificationBadge';
 import type { ClientProfile } from '../../types/client';
 
 export function ClientAccountPage() {
@@ -41,6 +42,10 @@ export function ClientAccountPage() {
           <div>
             <h3>{profile.fullName || user?.fullName || 'Client user'}</h3>
             <p className="meta">{profile.companyName || 'Company not added'} · {profile.country || 'Country not set'}</p>
+            <div className="chip-row">
+              <span className={`status-pill ${profile.activityStatus === 'active' ? 'success' : 'muted'}`}>{profile.activityStatus === 'active' ? 'Active' : 'Inactive'}</span>
+              <VerificationBadge status={profile.verificationStatus} />
+            </div>
           </div>
         </div>
       </section>

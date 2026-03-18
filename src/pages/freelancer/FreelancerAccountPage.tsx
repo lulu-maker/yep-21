@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getFreelancerProfile } from '../../api/freelancerApi';
+import { VerificationBadge } from '../../components/marketplace/VerificationBadge';
 import type { FreelancerProfile } from '../../types/freelancer';
 
 export function FreelancerAccountPage() {
@@ -33,6 +34,12 @@ export function FreelancerAccountPage() {
           <div>
             <h3>{profile.fullName || 'Freelancer'}</h3>
             <p className="meta">{profile.title || 'Title missing'} · {profile.country || 'Country missing'}</p>
+            <div className="chip-row">
+              <span className={`status-pill ${profile.availability === 'open_for_work' || profile.availability === 'open' ? 'success' : profile.availability === 'partly_available' || profile.availability === 'limited' ? 'warning' : 'muted'}`}>
+                {profile.availability === 'open_for_work' || profile.availability === 'open' ? 'Open for work' : profile.availability === 'partly_available' || profile.availability === 'limited' ? 'Partly available' : 'Unavailable'}
+              </span>
+              <VerificationBadge status={profile.verificationStatus} />
+            </div>
           </div>
         </div>
       </section>
