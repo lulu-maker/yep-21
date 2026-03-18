@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { EMAIL_REGEX, normalizeEmail } from '../../utils/validation';
+import { roleOnboardingPath } from '../../utils/authRouting';
+import { EMAIL_REGEX, isLengthBetween, isPasswordLengthValid, normalizeEmail } from '../../utils/validation';
 import type { UserRole } from '../../types/auth';
 
 interface FormValues {
@@ -9,10 +10,6 @@ interface FormValues {
   email: string;
   password: string;
   confirmPassword: string;
-}
-
-function nextRoute(role: UserRole) {
-  return role === 'freelancer' ? '/freelancer/onboarding' : '/client/onboarding';
 }
 
 export function RegisterPage() {
@@ -35,13 +32,13 @@ export function RegisterPage() {
     const nextErrors: Partial<Record<keyof FormValues, string>> = {};
     const email = normalizeEmail(values.email);
 
-    if (values.fullName.trim().length < 2 || values.fullName.trim().length > 80) {
+    if (!isLengthBetween(values.fullName, 2, 80)) {
       nextErrors.fullName = 'Full name must be between 2 and 80 characters.';
     }
     if (!email || !EMAIL_REGEX.test(email)) {
       nextErrors.email = 'Enter a valid email address.';
     }
-    if (values.password.length < 8 || values.password.length > 128) {
+    if (!isPasswordLengthValid(values.password)) {
       nextErrors.password = 'Password must be between 8 and 128 characters.';
     }
     if (!values.confirmPassword || values.confirmPassword !== values.password) {
@@ -67,7 +64,7 @@ export function RegisterPage() {
         password: values.password,
         role: selectedRole,
       });
-      navigate(nextRoute(user.role));
+      navigate(roleOnboardingPath(user.role));
     } catch (error) {
       setFormError(error instanceof Error ? error.message : 'Unable to register.');
     } finally {

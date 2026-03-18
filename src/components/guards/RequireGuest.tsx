@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { routeForAuthenticatedUser } from '../../utils/authRouting';
 
 export function RequireGuest() {
   const { user, isBootstrapping } = useAuth();
@@ -9,11 +10,7 @@ export function RequireGuest() {
   }
 
   if (user) {
-    if (user.role === 'client') {
-      return <Navigate to={user.onboardingCompleted ? '/client/account' : '/client/onboarding'} replace />;
-    }
-
-    return <Navigate to={user.onboardingCompleted ? '/freelancer/account' : '/freelancer/onboarding'} replace />;
+    return <Navigate to={routeForAuthenticatedUser(user.role, user.onboardingCompleted)} replace />;
   }
 
   return <Outlet />;

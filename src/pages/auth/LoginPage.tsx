@@ -1,14 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { routeForAuthenticatedUser } from '../../utils/authRouting';
 import { EMAIL_REGEX, normalizeEmail } from '../../utils/validation';
-
-function accountRoute(role: 'client' | 'freelancer', onboardingCompleted: boolean) {
-  if (role === 'client') {
-    return onboardingCompleted ? '/client/account' : '/client/onboarding';
-  }
-  return onboardingCompleted ? '/freelancer/account' : '/freelancer/onboarding';
-}
 
 export function LoginPage() {
   const { loginUser } = useAuth();
@@ -38,7 +32,7 @@ export function LoginPage() {
     try {
       const user = await loginUser({ email: normalized, password });
       const from = (location.state as { from?: string } | null)?.from;
-      navigate(from || accountRoute(user.role, user.onboardingCompleted));
+      navigate(from || routeForAuthenticatedUser(user.role, user.onboardingCompleted));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed.');
     } finally {
