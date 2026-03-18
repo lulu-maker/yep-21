@@ -1,6 +1,6 @@
 # yep-21
 
-Marketing website foundation for the yep-21 freelance marketplace.
+Marketing + client account foundation for the yep-21 freelance marketplace.
 
 ## Scripts
 
@@ -11,9 +11,21 @@ Marketing website foundation for the yep-21 freelance marketplace.
 
 ## Implemented routes
 
-- `/` Home
-- `/about` About
-- `/blog` Blog list
-- `/blog/:id` Blog detail
+Public:
+- `/`
+- `/about`
+- `/blog`
+- `/blog/:id`
 
-Newsletter subscription flow is implemented with a mock API layer matching `POST /newsletter/subscribe` semantics.
+Auth:
+- `/register`
+- `/login`
+- `/forgot-password`
+- `/reset-password`
+
+Client-only:
+- `/client/onboarding`
+- `/client/account`
+- `/client/settings`
+
+The API layer is mocked with contract-shaped service functions for auth, client profile, notifications, and password updates.

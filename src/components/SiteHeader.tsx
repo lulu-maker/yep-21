@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 const navItems = [
   { to: '/', label: 'Home' },
@@ -27,12 +27,12 @@ export function SiteHeader() {
         </nav>
 
         <div className="header-actions">
-          <a href="/login" className="btn btn-ghost">
+          <Link to="/login" className="btn btn-ghost">
             Login
-          </a>
-          <a href="/register" className="btn btn-primary">
+          </Link>
+          <Link to="/register" className="btn btn-primary">
             Sign up
-          </a>
+          </Link>
         </div>
       </div>
     </header>
