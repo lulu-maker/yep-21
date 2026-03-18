@@ -25,6 +25,8 @@ import { ClientJobsPage } from './pages/client/jobs/ClientJobsPage';
 import { FreelancerAccountPage } from './pages/freelancer/FreelancerAccountPage';
 import { FreelancerOnboardingPage } from './pages/freelancer/FreelancerOnboardingPage';
 import { FreelancerSettingsPage } from './pages/freelancer/FreelancerSettingsPage';
+import { FreelancerJobDetailPage } from './pages/freelancer/jobs/FreelancerJobDetailPage';
+import { FreelancerJobsPage } from './pages/freelancer/jobs/FreelancerJobsPage';
 
 export function App() {
   return (
@@ -62,6 +64,8 @@ export function App() {
           <Route element={<FreelancerLayout />}>
             <Route path="/freelancer/onboarding" element={<FreelancerOnboardingPage />} />
             <Route path="/freelancer/account" element={<FreelancerAccountPage />} />
+            <Route path="/freelancer/jobs" element={<FreelancerJobsPage />} />
+            <Route path="/freelancer/jobs/:id" element={<FreelancerJobDetailPage />} />
             <Route path="/freelancer/settings" element={<FreelancerSettingsPage />} />
           </Route>
         </Route>

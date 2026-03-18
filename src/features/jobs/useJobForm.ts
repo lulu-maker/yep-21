@@ -8,6 +8,7 @@ export function useJobForm(initial?: Partial<JobPayload>) {
     description: initial?.description ?? '',
     budgetMin: initial?.budgetMin ?? 100,
     budgetMax: initial?.budgetMax ?? 500,
+    category: initial?.category ?? '',
     skills: initial?.skills ?? [],
     experienceLevel: initial?.experienceLevel ?? 'intermediate',
     status: initial?.status ?? 'draft',
@@ -20,6 +21,7 @@ export function useJobForm(initial?: Partial<JobPayload>) {
       ...values,
       title: values.title.trim(),
       description: values.description.trim(),
+      category: (values.category ?? '').trim(),
       skills: skillsInput
         .split(',')
         .map((item) => item.trim())

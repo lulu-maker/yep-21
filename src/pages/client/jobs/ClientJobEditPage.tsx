@@ -28,6 +28,7 @@ export function ClientJobEditPage() {
           description: job.description,
           budgetMin: job.budgetMin,
           budgetMax: job.budgetMax,
+          category: job.category ?? '',
           skills: job.skills,
           experienceLevel: job.experienceLevel,
           status: job.status,

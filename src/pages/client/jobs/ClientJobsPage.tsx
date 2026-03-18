@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { deleteJob, getClientJobs, updateJobStatus } from '../../../api/jobsApi';
+import { JobCard } from '../../../components/jobs/JobCard';
 import { useAuth } from '../../../contexts/AuthContext';
 import type { Job, JobStatus } from '../../../types/job';
 
@@ -93,17 +94,9 @@ export function ClientJobsPage() {
       ) : (
         <div className="card-grid">
           {jobs.map((job) => (
-            <article key={job.id} className="info-card">
-              <p className="meta">Status: {job.status}</p>
-              <h3>{job.title}</h3>
-              <p>{job.description.slice(0, 140)}...</p>
-              <p>
-                Budget: ${job.budgetMin} - ${job.budgetMax}
-              </p>
+            <div key={job.id} className="account-grid">
+              <JobCard job={job} view="client" />
               <div className="job-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => navigate(`/client/jobs/${job.id}`)}>
-                  View
-                </button>
                 <button type="button" className="btn btn-secondary" onClick={() => navigate(`/client/jobs/${job.id}/edit`)}>
                   Edit
                 </button>
@@ -120,7 +113,7 @@ export function ClientJobsPage() {
                   Delete
                 </button>
               </div>
-            </article>
+            </div>
           ))}
         </div>
       )}

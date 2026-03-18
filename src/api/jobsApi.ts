@@ -86,3 +86,60 @@ export async function updateJobStatus(
   saveJobs(updated);
   return { success: true, job: updated.find((item) => item.id === jobId)! };
 }
+
+export interface JobsQuery {
+  search?: string;
+  category?: string;
+  experienceLevel?: Job['experienceLevel'] | '';
+  budgetMin?: number;
+  budgetMax?: number;
+  page?: number;
+  pageSize?: number;
+}
+
+export async function getMarketplaceJobs(query: JobsQuery): Promise<{
+  items: Job[];
+  total: number;
+  page: number;
+  totalPages: number;
+}> {
+  await wait(320);
+
+  const page = query.page ?? 1;
+  const pageSize = query.pageSize ?? 6;
+
+  const filtered = readJobs()
+    .filter((job) => job.status === 'open')
+    .filter((job) =>
+      query.search
+        ? `${job.title} ${job.description}`.toLowerCase().includes(query.search.toLowerCase().trim())
+        : true,
+    )
+    .filter((job) => (query.category ? (job.category ?? '').toLowerCase() === query.category.toLowerCase() : true))
+    .filter((job) => (query.experienceLevel ? job.experienceLevel === query.experienceLevel : true))
+    .filter((job) => (query.budgetMin ? job.budgetMax >= query.budgetMin : true))
+    .filter((job) => (query.budgetMax ? job.budgetMin <= query.budgetMax : true));
+
+  const total = filtered.length;
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const start = (safePage - 1) * pageSize;
+
+  return {
+    items: filtered.slice(start, start + pageSize),
+    total,
+    page: safePage,
+    totalPages,
+  };
+}
+
+export async function getMarketplaceJobById(jobId: string): Promise<Job> {
+  await wait(220);
+  const job = readJobs().find((item) => item.id === jobId);
+
+  if (!job) {
+    throw new Error('Job not found.');
+  }
+
+  return job;
+}

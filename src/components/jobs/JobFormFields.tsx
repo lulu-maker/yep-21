@@ -28,6 +28,15 @@ export function JobFormFields({ values, setValues, skillsInput, setSkillsInput, 
         {errors.description ? <span className="field-error">{errors.description}</span> : null}
       </label>
 
+
+      <label>
+        Category (optional)
+        <input
+          value={values.category ?? ''}
+          onChange={(e) => setValues((prev) => ({ ...prev, category: e.target.value }))}
+        />
+      </label>
+
       <div className="two-col-grid">
         <label>
           Budget min

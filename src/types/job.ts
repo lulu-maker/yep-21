@@ -9,6 +9,7 @@ export interface Job {
   description: string;
   budgetMin: number;
   budgetMax: number;
+  category?: string;
   skills: string[];
   experienceLevel: ExperienceLevel;
   status: JobStatus;
@@ -21,6 +22,7 @@ export interface JobPayload {
   description: string;
   budgetMin: number;
   budgetMax: number;
+  category?: string;
   skills: string[];
   experienceLevel: ExperienceLevel;
   status: JobStatus;
