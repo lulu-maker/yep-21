@@ -1,28 +1,47 @@
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, permissions
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
+
+from apps.ai.models import AIRequestLog, ResumeParseRequest
+from apps.ai.services import ai_service, submit_resume_parse
+from apps.chat.models import Conversation, Message
+from apps.chat.services import create_conversation, mark_conversation_read, send_message
 from apps.companies.models import CompanyProfile
 from apps.companies.services import upsert_company_profile
+from apps.contracts.models import Contract
+from apps.favorites.models import Favorite
 from apps.freelancers.models import FreelancerProfile
 from apps.freelancers.services import upsert_freelancer_profile
+from apps.notifications.models import Notification
+from apps.notifications.selectors import unread_count
+from apps.payments.selectors import get_user_billing_records, get_user_transactions
 from apps.projects.models import Project
 from apps.proposals.models import Proposal
 from apps.proposals.services import submit_proposal
-from apps.contracts.models import Contract
 from apps.reviews.models import Review
 from apps.reviews.services import create_review
+from apps.time_tracking.models import TimeEntry
 from apps.verification.models import VerificationRecord
 from apps.verification.services import submit_verification
-from apps.favorites.models import Favorite
+
 from .domain_serializers import (
+    AIRequestLogSerializer,
+    BillingRecordSerializer,
     CompanyProfileSerializer,
     ContractSerializer,
+    ConversationSerializer,
     FavoriteSerializer,
     FreelancerProfileSerializer,
+    MessageSerializer,
+    NotificationSerializer,
     ProjectSerializer,
     ProposalSerializer,
+    ResumeParseRequestSerializer,
     ReviewSerializer,
+    TimeEntrySerializer,
+    TransactionSerializer,
     VerificationRecordSerializer,
 )
 
@@ -212,3 +231,164 @@ class VerificationSelfView(generics.GenericAPIView):
         target = self._target()
         record = submit_verification(target, notes=request.data.get('notes', ''))
         return Response(self.get_serializer(record).data)
+
+
+class NotificationListView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(recipient=self.request.user)
+
+
+class NotificationMarkReadView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        notification = get_object_or_404(Notification, id=pk, recipient=request.user)
+        notification.mark_read()
+        return Response({'status': 'ok'})
+
+
+class NotificationUnreadCountView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        return Response({'unread_count': unread_count(request.user)})
+
+
+class ConversationListCreateView(generics.ListCreateAPIView):
+    serializer_class = ConversationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Conversation.objects.filter(participants__user=self.request.user).distinct()
+
+    def perform_create(self, serializer):
+        participant_ids = serializer.validated_data.pop('participant_ids', [])
+        participants = list(type(self.request.user).objects.filter(id__in=participant_ids))
+        conversation = create_conversation(created_by=self.request.user, participants=participants, **serializer.validated_data)
+        serializer.instance = conversation
+
+
+class ConversationDetailView(generics.RetrieveAPIView):
+    serializer_class = ConversationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Conversation.objects.filter(participants__user=self.request.user).distinct()
+
+
+class MessageListCreateView(generics.ListCreateAPIView):
+    serializer_class = MessageSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        conversation = get_object_or_404(Conversation, id=self.kwargs['conversation_id'], participants__user=self.request.user)
+        return Message.objects.filter(conversation=conversation).select_related('sender')
+
+    def perform_create(self, serializer):
+        conversation = get_object_or_404(Conversation, id=self.kwargs['conversation_id'])
+        message = send_message(
+            conversation=conversation,
+            sender=self.request.user,
+            content=serializer.validated_data['content'],
+            attachment_url=serializer.validated_data.get('attachment_url', ''),
+        )
+        serializer.instance = message
+
+
+class ConversationMarkReadView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        conversation = get_object_or_404(Conversation, id=pk, participants__user=request.user)
+        mark_conversation_read(conversation=conversation, user=request.user)
+        return Response({'status': 'ok'})
+
+
+class TimeEntryListCreateView(generics.ListCreateAPIView):
+    serializer_class = TimeEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return TimeEntry.objects.filter(contract__client=self.request.user) | TimeEntry.objects.filter(contract__freelancer=self.request.user)
+
+    def perform_create(self, serializer):
+        contract = serializer.validated_data['contract']
+        if contract.freelancer_id != self.request.user.id:
+            raise PermissionDenied('Only assigned freelancer can add time entries.')
+        serializer.save(user=self.request.user)
+
+
+class TimeEntryDetailView(generics.RetrieveUpdateAPIView):
+    serializer_class = TimeEntrySerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return TimeEntry.objects.filter(user=self.request.user)
+
+
+class BillingRecordListView(generics.ListAPIView):
+    serializer_class = BillingRecordSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return get_user_billing_records(self.request.user)
+
+
+class TransactionListView(generics.ListAPIView):
+    serializer_class = TransactionSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return get_user_transactions(self.request.user)
+
+
+class AIRequestListCreateView(generics.ListCreateAPIView):
+    serializer_class = AIRequestLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return AIRequestLog.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        request = ai_service.submit(
+            user=self.request.user,
+            task_type=serializer.validated_data['task_type'],
+            payload=serializer.validated_data.get('payload', {}),
+        )
+        serializer.instance = request
+
+
+class AIRequestDetailView(generics.RetrieveAPIView):
+    serializer_class = AIRequestLogSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return AIRequestLog.objects.filter(user=self.request.user)
+
+
+class OCRResumeParseListCreateView(generics.ListCreateAPIView):
+    serializer_class = ResumeParseRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ResumeParseRequest.objects.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        parse_request = submit_resume_parse(
+            user=self.request.user,
+            source_document=serializer.validated_data.get('source_document'),
+            source_url=serializer.validated_data.get('source_url', ''),
+            metadata=serializer.validated_data.get('metadata', {}),
+        )
+        serializer.instance = parse_request
+
+
+class OCRResumeParseDetailView(generics.RetrieveAPIView):
+    serializer_class = ResumeParseRequestSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return ResumeParseRequest.objects.filter(user=self.request.user)

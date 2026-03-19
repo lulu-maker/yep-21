@@ -5,12 +5,12 @@ from apps.notifications.services import create_notification
 
 
 @shared_task
-def process_verification_request(request_id: str):
-    return {'request_id': request_id, 'status': 'queued'}
+def handle_payment_event(event_type: str, payload: dict):
+    return {'event_type': event_type, 'payload': payload, 'status': 'received'}
 
 
 @shared_task
-def notify_verification_status_updated(user_id: int, payload: dict | None = None):
+def notify_payment_status_updated(user_id: int, payload: dict | None = None):
     from apps.users.models import User
 
     user = User.objects.filter(id=user_id).first()
@@ -18,7 +18,7 @@ def notify_verification_status_updated(user_id: int, payload: dict | None = None
         return {'status': 'missing', 'user_id': user_id}
     create_notification(
         recipient=user,
-        notification_type=NotificationType.VERIFICATION_STATUS_UPDATED,
+        notification_type=NotificationType.PAYMENT_STATUS_UPDATED,
         payload=payload or {},
     )
     return {'status': 'queued', 'user_id': user_id}
