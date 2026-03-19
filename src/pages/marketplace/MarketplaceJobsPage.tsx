@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ActiveFilterChips } from '../../components/marketplace/ActiveFilterChips';
-import { FilterSection } from '../../components/marketplace/FilterSection';
+import { ActiveFiltersBar } from '../../components/marketplace/ActiveFiltersBar';
+import { FilterDrawer } from '../../components/marketplace/FilterDrawer';
+import { FilterSidebar } from '../../components/marketplace/FilterSidebar';
 import { MarketplaceHero } from '../../components/marketplace/MarketplaceHero';
 import { MarketplaceResultCard } from '../../components/marketplace/MarketplaceResultCard';
 import { SearchToolbar } from '../../components/marketplace/SearchToolbar';
@@ -29,6 +30,11 @@ const INITIAL_FILTERS: FilterMap = {
   keywords: [],
 };
 
+type SearchOptionMap = {
+  excludeSelectedCountries: boolean;
+  includeRegionalRemote: boolean;
+};
+
 function daysAgoLabel(date: string) {
   const days = Math.max(0, Math.floor((Date.now() - new Date(date).getTime()) / (1000 * 60 * 60 * 24)));
   return days === 0 ? 'today' : `${days}d ago`;
@@ -48,6 +54,14 @@ export function MarketplaceJobsPage() {
   const [keywordInput, setKeywordInput] = useState('');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchOptions, setSearchOptions] = useState<SearchOptionMap>({
+    excludeSelectedCountries: false,
+    includeRegionalRemote: false,
+  });
+  const [industryExpanded, setIndustryExpanded] = useState(false);
+  const [fieldsExpanded, setFieldsExpanded] = useState(false);
+  const [countryExpanded, setCountryExpanded] = useState(false);
+  const [countrySearch, setCountrySearch] = useState('');
 
   useEffect(() => {
     void (async () => {
@@ -88,6 +102,10 @@ export function MarketplaceJobsPage() {
       .filter((item) => (filters.fields.length ? filters.fields.some((field) => item.skills.join(' ').toLowerCase().includes(field)) : true))
       .filter((item) => (filters.country.length ? filters.country.some((country) => item.locationLabel.toLowerCase().includes(country)) : true))
       .filter((item) => (filters.keywords.length ? filters.keywords.some((keyword) => `${item.title} ${item.description}`.toLowerCase().includes(keyword)) : true))
+      .filter((item) => (searchOptions.includeRegionalRemote ? item.workplaceType.toLowerCase() !== 'on-site' : true))
+      .filter((item) => (searchOptions.excludeSelectedCountries && filters.country.length
+        ? !filters.country.some((country) => item.locationLabel.toLowerCase().includes(country))
+        : true))
       .filter((item) => {
         if (!filters.publicationDate.length) return true;
         const age = Math.floor((Date.now() - new Date(item.createdAt).getTime()) / (1000 * 60 * 60 * 24));
@@ -99,12 +117,16 @@ export function MarketplaceJobsPage() {
     if (sort === 'name_desc') sorted.sort((a, b) => b.title.localeCompare(a.title));
     if (sort === 'newest') sorted.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     return sorted;
-  }, [prepared, query, filters, sort]);
+  }, [prepared, query, filters, sort, searchOptions]);
 
-  const activeChips = useMemo(
-    () => [query ? `search:${query}` : '', ...Object.values(filters).flat().map((item) => item.toString())].filter(Boolean),
-    [filters, query],
-  );
+  const activeChips = useMemo(() => {
+    const chips: Array<{ value: string; label: string }> = [];
+    if (query) chips.push({ value: `search:${query}`, label: `Search: ${query}` });
+    Object.values(filters).forEach((list) => list.forEach((item) => chips.push({ value: item, label: item })));
+    if (searchOptions.excludeSelectedCountries) chips.push({ value: 'option:exclude', label: 'Exclude selected countries' });
+    if (searchOptions.includeRegionalRemote) chips.push({ value: 'option:regional', label: 'Regional remote only' });
+    return chips;
+  }, [filters, query, searchOptions]);
 
   const toggleFilter = (group: keyof FilterMap, value: string) => {
     setFilters((prev) => ({
@@ -116,6 +138,14 @@ export function MarketplaceJobsPage() {
   const removeChip = (chip: string) => {
     if (chip.startsWith('search:')) {
       setQuery('');
+      return;
+    }
+    if (chip === 'option:exclude') {
+      setSearchOptions((prev) => ({ ...prev, excludeSelectedCountries: false }));
+      return;
+    }
+    if (chip === 'option:regional') {
+      setSearchOptions((prev) => ({ ...prev, includeRegionalRemote: false }));
       return;
     }
 
@@ -131,7 +161,9 @@ export function MarketplaceJobsPage() {
   const resetAll = () => {
     setQuery('');
     setFilters(INITIAL_FILTERS);
+    setSearchOptions({ excludeSelectedCountries: false, includeRegionalRemote: false });
     setKeywordInput('');
+    setCountrySearch('');
   };
 
   const addKeyword = () => {
@@ -141,12 +173,37 @@ export function MarketplaceJobsPage() {
     setKeywordInput('');
   };
 
+  const removeKeyword = (value: string) => {
+    setFilters((prev) => ({ ...prev, keywords: prev.keywords.filter((item) => item !== value) }));
+  };
+
+  const sidebarContent = (
+    <FilterSidebar
+      filters={filters}
+      searchOptions={searchOptions}
+      onToggleFilter={toggleFilter}
+      onToggleOption={(key, value) => setSearchOptions((prev) => ({ ...prev, [key]: value }))}
+      keywordInput={keywordInput}
+      onKeywordInput={setKeywordInput}
+      onAddKeyword={addKeyword}
+      onRemoveKeyword={removeKeyword}
+      countrySearch={countrySearch}
+      onCountrySearch={setCountrySearch}
+      industryExpanded={industryExpanded}
+      fieldsExpanded={fieldsExpanded}
+      countryExpanded={countryExpanded}
+      onExpandIndustry={() => setIndustryExpanded(true)}
+      onExpandFields={() => setFieldsExpanded(true)}
+      onExpandCountry={() => setCountryExpanded(true)}
+    />
+  );
+
   return (
     <div className="container section market-page">
       <MarketplaceHero title="Projects marketplace" subtitle="Filter and discover opportunities with rich project metadata." />
 
       <SearchToolbar query={query} onQuery={setQuery} sort={sort} onSort={setSort} resultCount={filtered.length} />
-      <ActiveFilterChips chips={activeChips} onRemove={removeChip} onReset={resetAll} />
+      <ActiveFiltersBar chips={activeChips} onRemove={removeChip} onClearAll={resetAll} />
 
       {!user ? (
         <div className="state-box">
@@ -156,61 +213,15 @@ export function MarketplaceJobsPage() {
       ) : null}
 
       <button type="button" className="btn btn-secondary market-mobile-filter-btn" onClick={() => setMobileFiltersOpen((prev) => !prev)}>
-        {mobileFiltersOpen ? 'Hide filters' : 'Show filters'}
+        Show filters
       </button>
+      <FilterDrawer open={mobileFiltersOpen} onClose={() => setMobileFiltersOpen(false)}>
+        {sidebarContent}
+      </FilterDrawer>
 
       <div className="discovery-layout">
-        <aside className={`filter-sidebar ${mobileFiltersOpen ? 'open' : ''}`}>
-          <FilterSection title="Workplace">
-            {['remote', 'hybrid', 'on-site'].map((item) => (
-              <label key={item}><input type="checkbox" checked={filters.workplace.includes(item)} onChange={() => toggleFilter('workplace', item)} /> {item}</label>
-            ))}
-          </FilterSection>
-
-          <FilterSection title="Contract type">
-            {['freelance', 'agency contract', 'permanent'].map((item) => (
-              <label key={item}><input type="checkbox" checked={filters.contractType.includes(item)} onChange={() => toggleFilter('contractType', item)} /> {item}</label>
-            ))}
-          </FilterSection>
-
-          <FilterSection title="Publication date">
-            {['today', '7', '12', '18', '24', '30'].map((item) => (
-              <label key={item}><input type="checkbox" checked={filters.publicationDate.includes(item)} onChange={() => toggleFilter('publicationDate', item)} /> {item}</label>
-            ))}
-          </FilterSection>
-
-          <FilterSection title="Industry">
-            {['design', 'development', 'marketing', 'finance'].map((item) => (
-              <label key={item}><input type="checkbox" checked={filters.industry.includes(item)} onChange={() => toggleFilter('industry', item)} /> {item}</label>
-            ))}
-            <button type="button" className="text-link">show more</button>
-          </FilterSection>
-
-          <FilterSection title="Keywords">
-            <div className="job-actions">
-              <input value={keywordInput} onChange={(event) => setKeywordInput(event.target.value)} placeholder="Add keyword" />
-              <button type="button" className="btn btn-secondary" onClick={addKeyword}>Add</button>
-            </div>
-          </FilterSection>
-
-          <FilterSection title="Professional fields">
-            {['frontend', 'backend', 'design', 'qa'].map((item) => (
-              <label key={item}><input type="checkbox" checked={filters.fields.includes(item)} onChange={() => toggleFilter('fields', item)} /> {item}</label>
-            ))}
-            <button type="button" className="text-link">show more</button>
-          </FilterSection>
-
-          <FilterSection title="Country">
-            {['canada', 'france', 'india', 'usa'].map((item) => (
-              <label key={item}><input type="checkbox" checked={filters.country.includes(item)} onChange={() => toggleFilter('country', item)} /> {item.toUpperCase()}</label>
-            ))}
-            <button type="button" className="text-link">show more</button>
-          </FilterSection>
-
-          <FilterSection title="Search options">
-            <label><input type="checkbox" /> Exclude selected countries</label>
-            <label><input type="checkbox" /> Include regional remote projects</label>
-          </FilterSection>
+        <aside className="filter-sidebar desktop-only">
+          {sidebarContent}
         </aside>
 
         <section className="results-column">
