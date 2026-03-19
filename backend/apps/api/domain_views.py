@@ -155,7 +155,7 @@ class ProposalListCreateView(generics.ListCreateAPIView):
     def perform_create(self, serializer):
         freelancer_profile = get_object_or_404(FreelancerProfile, user=self.request.user)
         project = serializer.validated_data['project']
-        submit_proposal(
+        proposal = submit_proposal(
             freelancer_profile=freelancer_profile,
             project=project,
             submitted_by=self.request.user,
@@ -165,6 +165,7 @@ class ProposalListCreateView(generics.ListCreateAPIView):
                 'delivery_days': serializer.validated_data['delivery_days'],
             },
         )
+        serializer.instance = proposal
 
 
 class ContractListView(generics.ListAPIView):
@@ -288,7 +289,7 @@ class MessageListCreateView(generics.ListCreateAPIView):
         return Message.objects.filter(conversation=conversation).select_related('sender')
 
     def perform_create(self, serializer):
-        conversation = get_object_or_404(Conversation, id=self.kwargs['conversation_id'])
+        conversation = get_object_or_404(Conversation, id=self.kwargs['conversation_id'], participants__user=self.request.user)
         message = send_message(
             conversation=conversation,
             sender=self.request.user,
