@@ -1370,6 +1370,138 @@ select:focus-visible {
   gap: var(--space-3);
 }
 
+.job-result-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 150ms ease, border-color 150ms ease, transform 150ms ease;
+}
+
+.job-result-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: #c8d9d8;
+  transform: translateY(-1px);
+}
+
+.job-result-card:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.result-top-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.result-company {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.company-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.company-avatar.fallback {
+  display: grid;
+  place-items: center;
+  background: var(--color-primary-100);
+  color: var(--color-primary-700);
+  font-weight: 700;
+}
+
+.save-btn {
+  border: 1px solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.save-btn.saved {
+  border-color: var(--color-primary-500);
+  color: var(--color-primary-700);
+  background: var(--color-primary-100);
+}
+
+.result-title {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.result-summary {
+  margin: 0;
+  color: rgba(15, 46, 47, 0.78);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.result-tag-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.chip.compact {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.result-metadata-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.result-metadata-item {
+  border: 1px solid #eef2f2;
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  background: #fbfcfc;
+}
+
+.result-metadata-item dt {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(15, 46, 47, 0.65);
+}
+
+.result-metadata-item dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.result-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.result-footer-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .market-card-head {
   display: flex;
   gap: var(--space-3);
@@ -1484,6 +1616,10 @@ select:focus-visible {
   .marketplace-hero,
   .market-detail-head {
     grid-template-columns: 1fr;
+  }
+
+  .result-metadata-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .phone-input-row {

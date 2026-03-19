@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { ActiveFiltersBar } from '../../components/marketplace/ActiveFiltersBar';
 import { FilterDrawer } from '../../components/marketplace/FilterDrawer';
 import { FilterSidebar } from '../../components/marketplace/FilterSidebar';
+import { JobResultCard, type JobResultItem } from '../../components/marketplace/JobResultCard';
 import { MarketplaceHero } from '../../components/marketplace/MarketplaceHero';
-import { MarketplaceResultCard } from '../../components/marketplace/MarketplaceResultCard';
 import { SearchToolbar } from '../../components/marketplace/SearchToolbar';
 import { getMarketplaceJobs } from '../../api/jobsApi';
+import { getSavedItems, toggleSavedJob } from '../../api/savedItemsApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { Job } from '../../types/job';
 
@@ -62,49 +63,66 @@ export function MarketplaceJobsPage() {
   const [fieldsExpanded, setFieldsExpanded] = useState(false);
   const [countryExpanded, setCountryExpanded] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
+  const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
 
   useEffect(() => {
     void (async () => {
       setIsLoading(true);
       const response = await getMarketplaceJobs({ page: 1, pageSize: user ? 50 : 10 });
       setItems(response.items);
+      if (user) {
+        const saved = await getSavedItems(user.id);
+        setSavedJobIds(saved.jobs);
+      } else {
+        setSavedJobIds([]);
+      }
       setIsLoading(false);
     })();
   }, [user?.id]);
 
-  const mapItem = (job: Job) => {
+  const mapItem = (job: Job): JobResultItem => {
     const workplaceType = job.experienceLevel === 'entry' ? 'Remote' : job.experienceLevel === 'intermediate' ? 'Hybrid' : 'On-site';
     const contractType = job.budgetMax > 5000 ? 'Agency contract' : job.budgetMax > 2500 ? 'Freelance' : 'Permanent';
     const duration = job.experienceLevel === 'expert' ? '6+ months' : job.experienceLevel === 'intermediate' ? '3 months' : '1 month';
     const companyName = `${job.category || 'General'} Studio`;
 
     return {
-      ...job,
+      id: job.id,
       companyName,
+      companyLogo: '',
+      companyVerificationStatus: job.status === 'open' ? 'verified' : 'pending',
+      title: job.title,
+      summary: job.description,
+      tags: [...job.skills, job.category || 'general', job.experienceLevel],
+      location: `${job.category || 'Global'} · Worldwide`,
       workplaceType,
       contractType,
       duration,
+      budgetMin: job.budgetMin,
+      budgetMax: job.budgetMax,
+      rateType: 'fixed',
       startTiming: job.status === 'open' ? 'ASAP' : 'Flexible',
-      postedLabel: daysAgoLabel(job.createdAt),
-      locationLabel: `${job.category || 'Global'} · Worldwide`,
-      isSaved: false,
+      postedAt: daysAgoLabel(job.createdAt),
+      createdAt: job.createdAt,
+      isSaved: savedJobIds.includes(job.id),
+      status: job.status,
     };
   };
 
-  const prepared = useMemo(() => items.map(mapItem), [items]);
+  const prepared = useMemo(() => items.map(mapItem), [items, savedJobIds]);
 
   const filtered = useMemo(() => {
     const apply = prepared
-      .filter((item) => `${item.title} ${item.description} ${item.skills.join(' ')}`.toLowerCase().includes(query.toLowerCase().trim()))
+      .filter((item) => `${item.title} ${item.summary} ${item.tags.join(' ')}`.toLowerCase().includes(query.toLowerCase().trim()))
       .filter((item) => (filters.workplace.length ? filters.workplace.includes(item.workplaceType.toLowerCase()) : true))
       .filter((item) => (filters.contractType.length ? filters.contractType.includes(item.contractType.toLowerCase()) : true))
-      .filter((item) => (filters.industry.length ? filters.industry.some((industry) => (item.category ?? '').toLowerCase().includes(industry)) : true))
-      .filter((item) => (filters.fields.length ? filters.fields.some((field) => item.skills.join(' ').toLowerCase().includes(field)) : true))
-      .filter((item) => (filters.country.length ? filters.country.some((country) => item.locationLabel.toLowerCase().includes(country)) : true))
-      .filter((item) => (filters.keywords.length ? filters.keywords.some((keyword) => `${item.title} ${item.description}`.toLowerCase().includes(keyword)) : true))
+      .filter((item) => (filters.industry.length ? filters.industry.some((industry) => item.companyName.toLowerCase().includes(industry)) : true))
+      .filter((item) => (filters.fields.length ? filters.fields.some((field) => item.tags.join(' ').toLowerCase().includes(field)) : true))
+      .filter((item) => (filters.country.length ? filters.country.some((country) => item.location.toLowerCase().includes(country)) : true))
+      .filter((item) => (filters.keywords.length ? filters.keywords.some((keyword) => `${item.title} ${item.summary}`.toLowerCase().includes(keyword)) : true))
       .filter((item) => (searchOptions.includeRegionalRemote ? item.workplaceType.toLowerCase() !== 'on-site' : true))
       .filter((item) => (searchOptions.excludeSelectedCountries && filters.country.length
-        ? !filters.country.some((country) => item.locationLabel.toLowerCase().includes(country))
+        ? !filters.country.some((country) => item.location.toLowerCase().includes(country))
         : true))
       .filter((item) => {
         if (!filters.publicationDate.length) return true;
@@ -177,6 +195,12 @@ export function MarketplaceJobsPage() {
     setFilters((prev) => ({ ...prev, keywords: prev.keywords.filter((item) => item !== value) }));
   };
 
+  const onToggleSave = async (jobId: string) => {
+    if (!user) return;
+    const saved = await toggleSavedJob(user.id, jobId);
+    setSavedJobIds(saved.jobs);
+  };
+
   const sidebarContent = (
     <FilterSidebar
       filters={filters}
@@ -228,7 +252,7 @@ export function MarketplaceJobsPage() {
           {isLoading ? <div className="state-box"><p>Loading projects…</p></div> : null}
           {!isLoading && !filtered.length ? <div className="state-box"><p>No projects matched these filters.</p></div> : null}
           {filtered.map((item) => (
-            <MarketplaceResultCard key={item.id} item={item} />
+            <JobResultCard key={item.id} item={item} onToggleSave={onToggleSave} />
           ))}
         </section>
       </div>
