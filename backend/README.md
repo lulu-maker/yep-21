@@ -24,13 +24,24 @@ Backend foundation for the yep-21 marketplace.
 - Django admin: `/django-admin/`
 - Wagtail admin: `/admin/`
 - API health: `/api/health/`
-- API current user: `/api/auth/me/`
-- API register/login foundation: `/api/auth/register/`, `/api/auth/login/`
+- API auth: `/api/auth/register/`, `/api/auth/login/`, `/api/auth/me/`
+- API profile: `/api/profiles/me/`
+- API discovery: `/api/freelancers/`, `/api/companies/`, `/api/projects/`
+- API workflow: `/api/proposals/`, `/api/contracts/`, `/api/reviews/`, `/api/favorites/`, `/api/verification/me/`
 
 ## Foundation apps
-Core implemented foundations:
-- `apps.users` (custom user + roles)
-- `apps.cms` (Wagtail page models + site settings)
-- `apps.api` (health + auth/current-user endpoints)
+Core implemented domain apps:
+- `apps.users`
+- `apps.profiles`
+- `apps.companies`
+- `apps.freelancers`
+- `apps.projects` (jobs domain object)
+- `apps.proposals`
+- `apps.contracts`
+- `apps.favorites`
+- `apps.reviews`
+- `apps.verification`
+- `apps.cms`
+- `apps.api`
 
-Placeholder domain apps are scaffolded for future marketplace modules.
+Other domain apps remain scaffolded placeholders for future steps.
