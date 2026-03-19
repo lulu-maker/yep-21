@@ -9,21 +9,37 @@ import { getEntityReviews } from '../../api/reviewsApi';
 import { RatingSummary } from '../../components/trust/RatingSummary';
 import { ReviewCard } from '../../components/trust/ReviewCard';
 import type { Job } from '../../types/job';
+import { Breadcrumbs } from '../../components/navigation/Breadcrumbs';
+import { getSavedItems, toggleSavedJob } from '../../api/savedItemsApi';
 
 export function MarketplaceJobDetailPage() {
   const { id = '' } = useParams();
   const { user } = useAuth();
   const [job, setJob] = useState<Job | null>(null);
   const [reviews, setReviews] = useState<{ averageRating: number; reviewCount: number; items: any[] }>({ averageRating: 0, reviewCount: 0, items: [] });
+  const [isReviewLoading, setIsReviewLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     void (async () => {
       const item = await getMarketplaceJobById(id);
       setJob(item);
+      setIsReviewLoading(true);
       const reviewsData = await getEntityReviews('client', item.clientId);
       setReviews(reviewsData as any);
+      setIsReviewLoading(false);
+      if (user) {
+        const saved = await getSavedItems(user.id);
+        setIsSaved(saved.jobs.includes(item.id));
+      }
     })();
-  }, [id]);
+  }, [id, user?.id]);
+
+  const onToggleSave = async () => {
+    if (!user || !job) return;
+    const next = await toggleSavedJob(user.id, job.id);
+    setIsSaved(next.jobs.includes(job.id));
+  };
 
   if (!job) return <div className="container section">Loading job...</div>;
 
@@ -44,7 +60,7 @@ export function MarketplaceJobDetailPage() {
 
   return (
     <div className="container section market-page-detail">
-      <p className="meta">Jobs / {job.title}</p>
+      <Breadcrumbs items={[{ label: 'Jobs', to: '/jobs' }, { label: job.title }]} />
       <section className="market-detail-hero info-card">
         <div className="profile-cover" />
         <div className="market-detail-head">
@@ -59,7 +75,9 @@ export function MarketplaceJobDetailPage() {
           </div>
           <div className="job-actions">
             <button type="button" className="btn btn-primary">Apply now</button>
-            <button type="button" className="btn btn-ghost">Save</button>
+            <button type="button" className="btn btn-ghost" onClick={() => void onToggleSave()}>
+              {isSaved ? 'Saved job' : 'Save job'}
+            </button>
           </div>
         </div>
       </section>
@@ -86,9 +104,11 @@ export function MarketplaceJobDetailPage() {
         <div className="chip-row">{job.skills.map((skill) => <span key={skill} className="chip">{skill}</span>)}</div>
       </section>
 
-      <section className="info-card">
+      <section className="info-card reviews-panel">
         <h3>Reviews</h3>
-        {reviews.items.length ? reviews.items.slice(0, 3).map((item) => <ReviewCard key={item.id} review={item} />) : <p>No reviews yet.</p>}
+        {isReviewLoading ? <p className="meta">Loading reviews…</p> : null}
+        {!isReviewLoading && reviews.items.length ? reviews.items.slice(0, 3).map((item) => <ReviewCard key={item.id} review={item} />) : null}
+        {!isReviewLoading && !reviews.items.length ? <div className="state-box compact"><p>No reviews yet for this client.</p></div> : null}
       </section>
     </div>
   );

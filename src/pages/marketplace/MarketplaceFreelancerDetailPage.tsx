@@ -6,26 +6,41 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getEntityReviews } from '../../api/reviewsApi';
 import { RatingSummary } from '../../components/trust/RatingSummary';
 import { ReviewCard } from '../../components/trust/ReviewCard';
+import { Breadcrumbs } from '../../components/navigation/Breadcrumbs';
+import { MOCK_FREELANCERS } from '../../data/mockFreelancers';
+import { getSavedItems, toggleSavedFreelancer } from '../../api/savedItemsApi';
 
-const MOCK_DETAIL: Record<string, { name: string; title: string; bio: string; skills: string[]; country: string; availability: 'open_for_work' | 'partly_available' | 'unavailable'; verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected'; }> = {
-  f1: { name: 'Ariana Chen', title: 'Frontend Engineer', bio: 'Builds modern web applications with clean UX.', skills: ['React', 'TypeScript', 'Testing'], country: 'Canada', availability: 'open_for_work', verificationStatus: 'verified' },
-  f2: { name: 'Moussa Diallo', title: 'Product Designer', bio: 'Designs scalable interfaces and systems.', skills: ['Figma', 'UX', 'Prototyping'], country: 'France', availability: 'partly_available', verificationStatus: 'pending' },
-  f3: { name: 'Noah Patel', title: 'Fullstack Developer', bio: 'Delivers end-to-end product features.', skills: ['Node.js', 'SQL', 'Cloud'], country: 'India', availability: 'unavailable', verificationStatus: 'unverified' },
-};
+const MOCK_DETAIL: Record<string, { name: string; title: string; bio: string; skills: string[]; country: string; availability: 'open_for_work' | 'partly_available' | 'unavailable'; verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected'; }> = Object.fromEntries(
+  MOCK_FREELANCERS.map((item) => [item.id, { ...item, bio: 'Delivers strong execution and clear communication across engagements.', skills: ['Communication', 'Delivery', 'Ownership'] }]),
+);
 
 export function MarketplaceFreelancerDetailPage() {
   const { id = '' } = useParams();
   const { user } = useAuth();
   const profile = MOCK_DETAIL[id];
   const [reviews, setReviews] = useState<{ averageRating: number; reviewCount: number; items: any[] }>({ averageRating: 0, reviewCount: 0, items: [] });
+  const [isReviewLoading, setIsReviewLoading] = useState(true);
+  const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {
     if (!profile) return;
     void (async () => {
+      setIsReviewLoading(true);
       const data = await getEntityReviews('freelancer', id);
       setReviews(data as any);
+      setIsReviewLoading(false);
+      if (user) {
+        const saved = await getSavedItems(user.id);
+        setIsSaved(saved.freelancers.includes(id));
+      }
     })();
-  }, [id, profile]);
+  }, [id, profile, user?.id]);
+
+  const onToggleFavorite = async () => {
+    if (!user) return;
+    const next = await toggleSavedFreelancer(user.id, id);
+    setIsSaved(next.freelancers.includes(id));
+  };
 
   if (!profile) return <div className="container section">Freelancer not found.</div>;
 
@@ -47,7 +62,7 @@ export function MarketplaceFreelancerDetailPage() {
 
   return (
     <div className="container section market-page-detail">
-      <p className="meta">Freelancers / {profile.name}</p>
+      <Breadcrumbs items={[{ label: 'Freelancers', to: '/freelancers' }, { label: profile.name }]} />
       <section className="market-detail-hero info-card">
         <div className="profile-cover" />
         <div className="market-detail-head">
@@ -63,7 +78,9 @@ export function MarketplaceFreelancerDetailPage() {
           </div>
           <div className="job-actions">
             <button type="button" className="btn btn-primary">Contact</button>
-            <button type="button" className="btn btn-ghost">Add to favourite</button>
+            <button type="button" className="btn btn-ghost" onClick={() => void onToggleFavorite()}>
+              {isSaved ? 'Saved to favorites' : 'Save freelancer'}
+            </button>
           </div>
         </div>
       </section>
@@ -73,7 +90,12 @@ export function MarketplaceFreelancerDetailPage() {
       <section className="info-card"><h3>Experience</h3><p>7+ years across freelance product delivery and cross-functional teams.</p></section>
       <section className="info-card"><h3>Attachments</h3><div className="upload-box">Portfolio and references can appear here.</div></section>
       <section className="info-card"><h3>Skills</h3><div className="chip-row">{profile.skills.map((skill) => <span key={skill} className="chip">{skill}</span>)}</div></section>
-      <section className="info-card"><h3>Reviews</h3>{reviews.items.length ? reviews.items.slice(0, 3).map((item) => <ReviewCard key={item.id} review={item} />) : <p>No reviews yet.</p>}</section>
+      <section className="info-card reviews-panel">
+        <h3>Reviews</h3>
+        {isReviewLoading ? <p className="meta">Loading reviews…</p> : null}
+        {!isReviewLoading && reviews.items.length ? reviews.items.slice(0, 3).map((item) => <ReviewCard key={item.id} review={item} />) : null}
+        {!isReviewLoading && !reviews.items.length ? <div className="state-box compact"><p>No reviews yet for this freelancer.</p></div> : null}
+      </section>
       <section className="info-card"><h3>Related projects</h3><p>Project cards placeholder.</p></section>
       <section className="info-card"><h3>Related jobs</h3><p>Related jobs placeholder.</p></section>
     </div>

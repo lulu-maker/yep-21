@@ -47,11 +47,14 @@ export function MarketplaceJobsPage() {
   const [filters, setFilters] = useState<FilterMap>(INITIAL_FILTERS);
   const [keywordInput, setKeywordInput] = useState('');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     void (async () => {
+      setIsLoading(true);
       const response = await getMarketplaceJobs({ page: 1, pageSize: user ? 50 : 10 });
       setItems(response.items);
+      setIsLoading(false);
     })();
   }, [user?.id]);
 
@@ -211,6 +214,8 @@ export function MarketplaceJobsPage() {
         </aside>
 
         <section className="results-column">
+          {isLoading ? <div className="state-box"><p>Loading projects…</p></div> : null}
+          {!isLoading && !filtered.length ? <div className="state-box"><p>No projects matched these filters.</p></div> : null}
           {filtered.map((item) => (
             <MarketplaceResultCard key={item.id} item={item} />
           ))}

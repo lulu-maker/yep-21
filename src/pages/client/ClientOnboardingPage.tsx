@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getClientProfile, updateClientProfile } from '../../api/clientApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ClientProfile } from '../../types/client';
+import { COUNTRY_OPTIONS, PHONE_CODE_OPTIONS } from '../../constants/location';
 
 function validate(values: ClientProfile) {
   const errors: Partial<Record<keyof ClientProfile, string>> = {};
@@ -36,6 +37,10 @@ export function ClientOnboardingPage() {
     country: '',
     description: '',
     avatarUrl: '',
+    phoneCode: '+1',
+    phoneNumber: '',
+    activityStatus: 'active',
+    verificationStatus: 'unverified',
   });
   const [errors, setErrors] = useState<Partial<Record<keyof ClientProfile, string>>>({});
   const [formError, setFormError] = useState<string | null>(null);
@@ -115,11 +120,36 @@ export function ClientOnboardingPage() {
         </label>
         <label>
           Country
-          <input
+          <select
             value={values.country}
             onChange={(e) => setValues((prev) => ({ ...prev, country: e.target.value }))}
-          />
+          >
+            <option value="">Select country</option>
+            {COUNTRY_OPTIONS.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
           {errors.country ? <span className="field-error">{errors.country}</span> : null}
+        </label>
+        <label>
+          Phone (optional)
+          <div className="phone-input-row">
+            <select
+              value={values.phoneCode ?? '+1'}
+              onChange={(e) => setValues((prev) => ({ ...prev, phoneCode: e.target.value }))}
+            >
+              {PHONE_CODE_OPTIONS.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              inputMode="tel"
+              placeholder="555 123 4567"
+              value={values.phoneNumber ?? ''}
+              onChange={(e) => setValues((prev) => ({ ...prev, phoneNumber: e.target.value }))}
+            />
+          </div>
         </label>
         <label>
           Avatar URL (optional)

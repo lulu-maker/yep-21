@@ -4,6 +4,7 @@ import { getClientProfile, updateClientProfile } from '../../api/clientApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { ClientProfile } from '../../types/client';
 import { VerificationPanel } from '../../components/trust/VerificationPanel';
+import { COUNTRY_OPTIONS, PHONE_CODE_OPTIONS } from '../../constants/location';
 
 export function ClientProfileEditPage() {
   const { user, updateUser } = useAuth();
@@ -62,9 +63,26 @@ export function ClientProfileEditPage() {
           <label>Last name<input value={profile.fullName.split(' ').slice(1).join(' ')} onChange={(e) => setProfile((prev) => ({ ...prev, fullName: `${prev.fullName.split(' ')[0] ?? ''} ${e.target.value}`.trim() }))} /></label>
         </div>
         <div className="two-col-grid">
-          <label>Country<input value={profile.country} onChange={(e) => setProfile((prev) => ({ ...prev, country: e.target.value }))} /></label>
+          <label>Country
+            <select value={profile.country} onChange={(e) => setProfile((prev) => ({ ...prev, country: e.target.value }))}>
+              <option value="">Select country</option>
+              {COUNTRY_OPTIONS.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </label>
           <label>Email<input value={user?.email ?? ''} disabled /></label>
         </div>
+        <label>Phone
+          <div className="phone-input-row">
+            <select value={profile.phoneCode ?? '+1'} onChange={(e) => setProfile((prev) => ({ ...prev, phoneCode: e.target.value }))}>
+              {PHONE_CODE_OPTIONS.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+            <input type="tel" value={profile.phoneNumber ?? ''} onChange={(e) => setProfile((prev) => ({ ...prev, phoneNumber: e.target.value }))} placeholder="555 123 4567" />
+          </div>
+        </label>
         <label>Job category<input value={profile.companyName} onChange={(e) => setProfile((prev) => ({ ...prev, companyName: e.target.value }))} /></label>
         <label>Languages<input defaultValue="English" /></label>
         <label>About<textarea rows={4} value={skills} onChange={(e) => setSkills(e.target.value)} /></label>

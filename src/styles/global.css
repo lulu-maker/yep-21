@@ -343,6 +343,28 @@ select:focus-visible {
   font-weight: 700;
 }
 
+.breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--font-body-sm);
+  color: rgba(15, 46, 47, 0.75);
+}
+
+.crumb {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.crumb a {
+  text-decoration: none;
+}
+
+.crumb a:hover {
+  text-decoration: underline;
+}
+
 .about-stack,
 .account-grid,
 .form-stack {
@@ -1009,6 +1031,28 @@ select:focus-visible {
   gap: var(--space-4);
 }
 
+.dashboard-saved-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.saved-list {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.saved-list a {
+  text-decoration: none;
+  color: var(--color-primary-700);
+}
+
+.saved-list a:hover {
+  text-decoration: underline;
+}
+
 .dashboard-shortcut-card {
   text-decoration: none;
   background: #ffffff;
@@ -1052,6 +1096,10 @@ select:focus-visible {
 @media (max-width: 1100px) {
   .dashboard-shortcut-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboard-saved-grid {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1228,6 +1276,15 @@ select:focus-visible {
   gap: var(--space-4);
 }
 
+.reviews-panel {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.state-box.compact {
+  padding: var(--space-4);
+}
+
 .market-detail-hero {
   overflow: hidden;
   padding: 0;
@@ -1260,6 +1317,10 @@ select:focus-visible {
   .market-detail-head {
     grid-template-columns: 1fr;
   }
+
+  .phone-input-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .rating-summary {
@@ -1274,9 +1335,22 @@ select:focus-visible {
 }
 
 .review-card {
-  margin-top: var(--space-2);
+  margin-top: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
 }
 
 .review-rating {
   letter-spacing: 0.08em;
+}
+
+.phone-input-row {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: var(--space-2);
+}
+
+.phone-input-row select,
+.phone-input-row input {
+  width: 100%;
 }

@@ -9,6 +9,8 @@ export interface FreelancerProfile {
   skills: string[];
   hourlyRate: number;
   country: string;
+  phoneCode?: string;
+  phoneNumber?: string;
   avatarUrl: string;
   availability: FreelancerAvailability;
   activityStatus: ActivityStatus;

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getFreelancerProfile, updateFreelancerProfile } from '../../api/freelancerApi';
 import { useAuth } from '../../contexts/AuthContext';
 import type { FreelancerProfile } from '../../types/freelancer';
+import { COUNTRY_OPTIONS, PHONE_CODE_OPTIONS } from '../../constants/location';
 
 function validate(values: FreelancerProfile) {
   const errors: Partial<Record<keyof FreelancerProfile, string>> = {};
@@ -39,8 +40,12 @@ export function FreelancerOnboardingPage() {
     skills: [],
     hourlyRate: 1,
     country: '',
+    phoneCode: '+1',
+    phoneNumber: '',
     avatarUrl: '',
-    availability: 'open',
+    availability: 'open_for_work',
+    activityStatus: 'active',
+    verificationStatus: 'unverified',
   });
   const [skillsInput, setSkillsInput] = useState('');
   const [errors, setErrors] = useState<Partial<Record<keyof FreelancerProfile, string>>>({});
@@ -147,8 +152,31 @@ export function FreelancerOnboardingPage() {
 
         <label>
           Country
-          <input value={values.country} onChange={(e) => setValues((prev) => ({ ...prev, country: e.target.value }))} />
+          <select value={values.country} onChange={(e) => setValues((prev) => ({ ...prev, country: e.target.value }))}>
+            <option value="">Select country</option>
+            {COUNTRY_OPTIONS.map((item) => (
+              <option key={item} value={item}>{item}</option>
+            ))}
+          </select>
           {errors.country ? <span className="field-error">{errors.country}</span> : null}
+        </label>
+
+        <label>
+          Phone (optional)
+          <div className="phone-input-row">
+            <select value={values.phoneCode ?? '+1'} onChange={(e) => setValues((prev) => ({ ...prev, phoneCode: e.target.value }))}>
+              {PHONE_CODE_OPTIONS.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+            <input
+              type="tel"
+              inputMode="tel"
+              placeholder="555 123 4567"
+              value={values.phoneNumber ?? ''}
+              onChange={(e) => setValues((prev) => ({ ...prev, phoneNumber: e.target.value }))}
+            />
+          </div>
         </label>
 
         <label>
@@ -164,8 +192,8 @@ export function FreelancerOnboardingPage() {
               setValues((prev) => ({ ...prev, availability: e.target.value as FreelancerProfile['availability'] }))
             }
           >
-            <option value="open">Open to work</option>
-            <option value="limited">Limited</option>
+            <option value="open_for_work">Open to work</option>
+            <option value="partly_available">Partly available</option>
             <option value="unavailable">Unavailable</option>
           </select>
         </label>

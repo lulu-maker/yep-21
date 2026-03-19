@@ -5,12 +5,7 @@ import { MarketplaceHero } from '../../components/marketplace/MarketplaceHero';
 import { StatusBadge } from '../../components/marketplace/StatusBadge';
 import { VerificationBadge } from '../../components/marketplace/VerificationBadge';
 import { useAuth } from '../../contexts/AuthContext';
-
-const MOCK_FREELANCERS = [
-  { id: 'f1', name: 'Ariana Chen', title: 'Frontend Engineer', country: 'Canada', availability: 'open_for_work', verificationStatus: 'verified' as const },
-  { id: 'f2', name: 'Moussa Diallo', title: 'Product Designer', country: 'France', availability: 'partly_available', verificationStatus: 'pending' as const },
-  { id: 'f3', name: 'Noah Patel', title: 'Fullstack Developer', country: 'India', availability: 'unavailable', verificationStatus: 'unverified' as const },
-];
+import { MOCK_FREELANCERS } from '../../data/mockFreelancers';
 
 const AVAILABILITY_LABEL: Record<string, string> = {
   open_for_work: 'Open for work',
@@ -41,6 +36,7 @@ export function MarketplaceFreelancersPage() {
 
       <div className="market-layout">
         <div className="market-results">
+          {filtered.length === 0 ? <div className="state-box"><p>No freelancers match your current filters.</p></div> : null}
           {filtered.map((item) => (
             <article key={item.id} className="market-card">
               <div className="market-card-head">

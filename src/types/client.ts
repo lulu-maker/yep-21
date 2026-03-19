@@ -5,6 +5,8 @@ export interface ClientProfile {
   fullName: string;
   companyName: string;
   country: string;
+  phoneCode?: string;
+  phoneNumber?: string;
   description: string;
   avatarUrl: string;
   activityStatus: ActivityStatus;

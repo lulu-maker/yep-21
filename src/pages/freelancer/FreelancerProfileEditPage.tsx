@@ -5,6 +5,7 @@ import { parseResumeWithOcr } from '../../api/ocrApi';
 import type { FreelancerProfile } from '../../types/freelancer';
 import { VerificationPanel } from '../../components/trust/VerificationPanel';
 import { useAuth } from '../../contexts/AuthContext';
+import { COUNTRY_OPTIONS, PHONE_CODE_OPTIONS } from '../../constants/location';
 
 export function FreelancerProfileEditPage() {
   const navigate = useNavigate();
@@ -70,9 +71,26 @@ export function FreelancerProfileEditPage() {
           <label>Last name<input value={profile.fullName.split(' ').slice(1).join(' ')} onChange={(e) => setProfile((prev) => (prev ? { ...prev, fullName: `${prev.fullName.split(' ')[0] ?? ''} ${e.target.value}`.trim() } : prev))} /></label>
         </div>
         <div className="two-col-grid">
-          <label>Country<input value={profile.country} onChange={(e) => setProfile((prev) => (prev ? { ...prev, country: e.target.value } : prev))} /></label>
+          <label>Country
+            <select value={profile.country} onChange={(e) => setProfile((prev) => (prev ? { ...prev, country: e.target.value } : prev))}>
+              <option value="">Select country</option>
+              {COUNTRY_OPTIONS.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+          </label>
           <label>Email<input value="Visible in account" disabled /></label>
         </div>
+        <label>Phone
+          <div className="phone-input-row">
+            <select value={profile.phoneCode ?? '+1'} onChange={(e) => setProfile((prev) => (prev ? { ...prev, phoneCode: e.target.value } : prev))}>
+              {PHONE_CODE_OPTIONS.map((item) => (
+                <option key={item} value={item}>{item}</option>
+              ))}
+            </select>
+            <input type="tel" value={profile.phoneNumber ?? ''} onChange={(e) => setProfile((prev) => (prev ? { ...prev, phoneNumber: e.target.value } : prev))} placeholder="555 123 4567" />
+          </div>
+        </label>
         <label>Job category<input value={profile.title} onChange={(e) => setProfile((prev) => (prev ? { ...prev, title: e.target.value } : prev))} /></label>
         <label>Languages<input defaultValue="English" /></label>
         <label>About<textarea rows={4} value={profile.bio} onChange={(e) => setProfile((prev) => (prev ? { ...prev, bio: e.target.value } : prev))} /></label>
