@@ -16,6 +16,33 @@ pip install -r requirements.txt
 - PostgreSQL (must match `DATABASE_*` values in `.env`)
 - Redis (must match `REDIS_URL` / Celery URLs)
 
+
+## Troubleshooting install issues
+
+### `No matching distribution found for Django>=5.1,<5.2`
+This usually happens when either:
+- your Python version is too old for the pinned Django version, or
+- your package index mirror does not host that version.
+
+This repo now pins Django to `4.2.x` for broader compatibility.
+
+Recommended fix steps:
+
+```bash
+cd backend
+python -m pip install --upgrade pip setuptools wheel
+python -m pip --version
+python --version
+pip install -r requirements.txt
+```
+
+If you're already inside `backend/`, do **not** run `cd backend` again.
+To exit the venv use:
+
+```bash
+deactivate
+```
+
 ## 2) Database + admin bootstrap
 
 ```bash
