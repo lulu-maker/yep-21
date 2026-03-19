@@ -9,7 +9,7 @@ cd backend
 cp .env.example .env
 python -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 ### Start local dependencies
@@ -33,7 +33,7 @@ cd backend
 python -m pip install --upgrade pip setuptools wheel
 python -m pip --version
 python --version
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 If you're already inside `backend/`, do **not** run `cd backend` again.
@@ -41,6 +41,24 @@ To exit the venv use:
 
 ```bash
 deactivate
+```
+
+### `ModuleNotFoundError: No module named "rest_framework"`
+This usually means dependencies were installed into a different Python environment than the one running Django.
+
+Run these commands from `backend/` **after activating your venv**:
+
+```bash
+which python
+python -m pip --version
+python -m pip install -r requirements.txt
+python -c "import django, rest_framework, wagtail; print('deps-ok')"
+```
+
+If `which python` points outside `.venv`, reactivate your environment:
+
+```bash
+source .venv/bin/activate
 ```
 
 ## 2) Database + admin bootstrap
