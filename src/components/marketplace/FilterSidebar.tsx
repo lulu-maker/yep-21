@@ -66,6 +66,11 @@ export function FilterSidebar({
 
   return (
     <div className="filter-sidebar-inner">
+      <div className="filter-sidebar-header">
+        <h2>Filters</h2>
+        <p className="meta">Narrow down projects quickly.</p>
+      </div>
+
       <FilterSection title="Workplace">
         <CheckboxGroup
           options={['remote', 'hybrid', 'on-site']}

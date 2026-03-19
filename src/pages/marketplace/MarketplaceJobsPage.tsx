@@ -55,6 +55,7 @@ export function MarketplaceJobsPage() {
   const [keywordInput, setKeywordInput] = useState('');
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchOptions, setSearchOptions] = useState<SearchOptionMap>({
     excludeSelectedCountries: false,
     includeRegionalRemote: false,
@@ -64,21 +65,28 @@ export function MarketplaceJobsPage() {
   const [countryExpanded, setCountryExpanded] = useState(false);
   const [countrySearch, setCountrySearch] = useState('');
   const [savedJobIds, setSavedJobIds] = useState<string[]>([]);
+  const [reloadTick, setReloadTick] = useState(0);
 
   useEffect(() => {
     void (async () => {
       setIsLoading(true);
-      const response = await getMarketplaceJobs({ page: 1, pageSize: user ? 50 : 10 });
-      setItems(response.items);
-      if (user) {
-        const saved = await getSavedItems(user.id);
-        setSavedJobIds(saved.jobs);
-      } else {
-        setSavedJobIds([]);
+      setError(null);
+      try {
+        const response = await getMarketplaceJobs({ page: 1, pageSize: user ? 50 : 10 });
+        setItems(response.items);
+        if (user) {
+          const saved = await getSavedItems(user.id);
+          setSavedJobIds(saved.jobs);
+        } else {
+          setSavedJobIds([]);
+        }
+      } catch {
+        setError('Unable to load projects. Please retry.');
+        setItems([]);
       }
       setIsLoading(false);
     })();
-  }, [user?.id]);
+  }, [user?.id, reloadTick]);
 
   const mapItem = (job: Job): JobResultItem => {
     const workplaceType = job.experienceLevel === 'entry' ? 'Remote' : job.experienceLevel === 'intermediate' ? 'Hybrid' : 'On-site';
@@ -250,7 +258,15 @@ export function MarketplaceJobsPage() {
 
         <section className="results-column">
           {isLoading ? <div className="state-box"><p>Loading projects…</p></div> : null}
-          {!isLoading && !filtered.length ? <div className="state-box"><p>No projects matched these filters.</p></div> : null}
+          {!isLoading && error ? (
+            <div className="state-box">
+              <p>{error}</p>
+              <button type="button" className="btn btn-secondary" onClick={() => setReloadTick((prev) => prev + 1)}>
+                Retry
+              </button>
+            </div>
+          ) : null}
+          {!isLoading && !error && !filtered.length ? <div className="state-box"><p>No projects matched these filters.</p></div> : null}
           {filtered.map((item) => (
             <JobResultCard key={item.id} item={item} onToggleSave={onToggleSave} />
           ))}

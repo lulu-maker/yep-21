@@ -1141,6 +1141,59 @@ select:focus-visible {
   gap: var(--space-4);
 }
 
+.search-toolbar {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.search-toolbar-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.search-toolbar-top h2 {
+  margin: 0;
+}
+
+.result-count-pill {
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  padding: 4px 10px;
+  font-size: var(--font-body-sm);
+  color: rgba(15, 46, 47, 0.78);
+  background: #fbfcfc;
+}
+
+.search-toolbar-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: var(--space-3);
+}
+
+.toolbar-search {
+  min-height: 44px;
+}
+
+.toolbar-sort {
+  display: grid;
+  gap: 4px;
+  font-size: var(--font-body-sm);
+}
+
+.toolbar-sort select {
+  height: 44px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  padding: 0 10px;
+}
+
 .marketplace-hero {
   background: linear-gradient(135deg, #f2fbfb 0%, #dff3f2 100%);
   border: 1px solid var(--color-border);
@@ -1216,6 +1269,17 @@ select:focus-visible {
 .filter-sidebar-inner {
   display: grid;
   gap: var(--space-3);
+}
+
+.filter-sidebar-header {
+  display: grid;
+  gap: 2px;
+  padding: 0 var(--space-1);
+}
+
+.filter-sidebar-header h2 {
+  margin: 0;
+  font-size: var(--font-h5);
 }
 
 .filter-section-card {
@@ -1321,6 +1385,15 @@ select:focus-visible {
   justify-content: space-between;
   gap: var(--space-3);
   flex-wrap: wrap;
+}
+
+.active-filters-main {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.active-filters-clear {
+  white-space: nowrap;
 }
 
 .results-column {
@@ -1609,6 +1682,10 @@ select:focus-visible {
   .market-mobile-filter-btn {
     display: inline-flex;
     width: fit-content;
+  }
+
+  .search-toolbar-controls {
+    grid-template-columns: 1fr;
   }
 }
 
