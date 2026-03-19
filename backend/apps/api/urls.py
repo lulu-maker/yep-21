@@ -31,10 +31,11 @@ from .domain_views import (
     TransactionListView,
     VerificationSelfView,
 )
-from .views import CurrentUserView, HealthCheckView, LoginView, RegisterView
+from .views import CurrentUserView, HealthCheckView, HealthReadyView, LoginView, RegisterView
 
 urlpatterns = [
     path('health/', HealthCheckView.as_view(), name='health-check'),
+    path('health/ready/', HealthReadyView.as_view(), name='health-ready'),
     path('auth/me/', CurrentUserView.as_view(), name='current-user'),
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),

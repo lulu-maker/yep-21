@@ -1,47 +1,99 @@
-# yep-21 backend foundation
+# yep-21 backend developer setup
 
-Backend foundation for the yep-21 marketplace.
+Backend foundation for the yep-21 marketplace (Django + DRF + Wagtail + Celery).
 
-## Stack
-- Django
-- Wagtail
-- PostgreSQL
-- Redis
-- Celery
+## 1) Local developer setup
 
-## Quick start
-1. Copy envs: `cp .env.example .env`
-2. Install deps: `pip install -r requirements.txt`
-3. Run migrations: `python manage.py migrate`
-4. Create superuser: `python manage.py createsuperuser`
-5. Run server: `python manage.py runserver`
+```bash
+cd backend
+cp .env.example .env
+python -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
 
-## Celery
-- Worker: `celery -A config worker -l info`
-- Beat (optional): `celery -A config beat -l info`
+### Start local dependencies
+- PostgreSQL (must match `DATABASE_*` values in `.env`)
+- Redis (must match `REDIS_URL` / Celery URLs)
 
-## URL surface
+## 2) Database + admin bootstrap
+
+```bash
+cd backend
+python manage.py migrate
+python manage.py createsuperuser
+```
+
+## 3) Optional dev seed data
+
+Use this lightweight command to quickly get client/freelancer/project records for local testing:
+
+```bash
+cd backend
+python manage.py seed_dev_data
+```
+
+Seeded dev credentials:
+- client: `client@example.com` / `devpass123!`
+- freelancer: `freelancer@example.com` / `devpass123!`
+
+## 4) Run services
+
+### Django API/admin
+```bash
+cd backend
+python manage.py runserver
+```
+
+### Celery worker
+```bash
+cd backend
+celery -A config worker -l info
+```
+
+### Celery beat (optional)
+```bash
+cd backend
+celery -A config beat -l info
+```
+
+## 5) Health + verification checks
+
+- Liveness: `GET /api/health/`
+- Readiness (DB probe): `GET /api/health/ready/`
 - Django admin: `/django-admin/`
 - Wagtail admin: `/admin/`
-- API health: `/api/health/`
+
+Quick check examples:
+
+```bash
+curl http://127.0.0.1:8000/api/health/
+curl http://127.0.0.1:8000/api/health/ready/
+```
+
+## 6) Migrations workflow for contributors
+
+When models change:
+
+```bash
+cd backend
+python manage.py makemigrations
+python manage.py migrate
+python manage.py showmigrations
+```
+
+## 7) Smoke tests
+
+Run minimal smoke tests for core API setup:
+
+```bash
+cd backend
+python manage.py test apps.api.tests.test_smoke
+```
+
+## URL surface (current foundation)
+- API health: `/api/health/`, `/api/health/ready/`
 - API auth: `/api/auth/register/`, `/api/auth/login/`, `/api/auth/me/`
 - API profile: `/api/profiles/me/`
-- API discovery: `/api/freelancers/`, `/api/companies/`, `/api/projects/`
-- API workflow: `/api/proposals/`, `/api/contracts/`, `/api/reviews/`, `/api/favorites/`, `/api/verification/me/`
-
-## Foundation apps
-Core implemented domain apps:
-- `apps.users`
-- `apps.profiles`
-- `apps.companies`
-- `apps.freelancers`
-- `apps.projects` (jobs domain object)
-- `apps.proposals`
-- `apps.contracts`
-- `apps.favorites`
-- `apps.reviews`
-- `apps.verification`
-- `apps.cms`
-- `apps.api`
-
-Other domain apps remain scaffolded placeholders for future steps.
+- API discovery/workflow: `/api/freelancers/`, `/api/companies/`, `/api/projects/`, `/api/proposals/`, `/api/contracts/`, `/api/reviews/`, `/api/favorites/`, `/api/verification/me/`
+- API operations: `/api/notifications/`, `/api/conversations/`, `/api/time-entries/`, `/api/billing-records/`, `/api/transactions/`, `/api/ai/requests/`, `/api/ai/ocr/resume-parse/`
