@@ -1,3 +1,5 @@
+from typing import Optional
+
 from celery import shared_task
 
 from apps.notifications.models import NotificationType
@@ -10,7 +12,7 @@ def process_verification_request(request_id: str):
 
 
 @shared_task
-def notify_verification_status_updated(user_id: int, payload: dict | None = None):
+def notify_verification_status_updated(user_id: int, payload: Optional[dict] = None):
     from apps.users.models import User
 
     user = User.objects.filter(id=user_id).first()

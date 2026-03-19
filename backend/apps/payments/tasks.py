@@ -1,3 +1,5 @@
+from typing import Optional
+
 from celery import shared_task
 
 from apps.notifications.models import NotificationType
@@ -10,7 +12,7 @@ def handle_payment_event(event_type: str, payload: dict):
 
 
 @shared_task
-def notify_payment_status_updated(user_id: int, payload: dict | None = None):
+def notify_payment_status_updated(user_id: int, payload: Optional[dict] = None):
     from apps.users.models import User
 
     user = User.objects.filter(id=user_id).first()
