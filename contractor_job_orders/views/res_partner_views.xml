@@ -1,0 +1,20 @@
+<odoo>
+    <record id="view_partner_form_inherit_contractor_job_orders" model="ir.ui.view">
+        <field name="name">res.partner.form.contractor.job.orders</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet//group" position="inside">
+                <group string="Contractor Details">
+                    <field name="nationality"/><field name="passport_number"/><field name="passport_expiry_date"/><field name="id_number"/>
+                    <field name="bank_name"/><field name="iban"/><field name="swift"/><field name="beneficiary_name"/>
+                </group>
+            </xpath>
+            <xpath expr="//div[contains(@class, 'oe_button_box')]" position="inside">
+                <button name="action_view_job_orders" type="object" class="oe_stat_button" icon="fa-briefcase" string="Job Orders">
+                    <field name="job_order_count" widget="statinfo" string="Job Orders"/>
+                </button>
+            </xpath>
+        </field>
+    </record>
+</odoo>

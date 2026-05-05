@@ -1,0 +1,98 @@
+<odoo>
+    <record id="view_contractor_job_order_tree" model="ir.ui.view">
+        <field name="name">contractor.job.order.tree</field>
+        <field name="model">contractor.job.order</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="contractor_id"/>
+                <field name="purchase_order_id"/>
+                <field name="project_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="total_amount"/>
+                <field name="net_payable"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_contractor_job_order_form" model="ir.ui.view">
+        <field name="name">contractor.job.order.form</field>
+        <field name="model">contractor.job.order</field>
+        <field name="arch" type="xml">
+            <form string="Contractor Job Order">
+                <header><field name="state" widget="statusbar"/></header>
+                <sheet>
+                    <group>
+                        <group string="General">
+                            <field name="name"/>
+                            <field name="contractor_id"/>
+                            <field name="purchase_order_id"/>
+                            <field name="project_id"/>
+                            <field name="position_title"/>
+                            <field name="role_scope"/>
+                        </group>
+                        <group string="Status and Tax">
+                            <field name="state"/>
+                            <field name="currency_id"/>
+                            <field name="wht_percentage"/>
+                            <field name="total_amount" readonly="1"/>
+                            <field name="net_payable" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Dates">
+                            <group>
+                                <group><field name="start_date"/><field name="end_date"/><field name="remote_start_date"/><field name="remote_end_date"/></group>
+                                <group><field name="onground_start_date"/><field name="onground_end_date"/><field name="event_date"/><field name="bump_in_date"/><field name="bump_out_date"/></group>
+                            </group>
+                        </page>
+                        <page string="Financial">
+                            <group>
+                                <field name="consultancy_fee"/>
+                                <field name="salary_package_qr"/>
+                                <field name="salary_package_other_currency"/>
+                                <field name="per_diem"/>
+                                <field name="mobile_allowance"/>
+                                <field name="transport_reimbursement"/>
+                                <field name="accommodation"/>
+                                <field name="car_rental"/>
+                            </group>
+                        </page>
+                        <page string="Travel and Identity">
+                            <group>
+                                <field name="country_of_residence"/>
+                                <field name="nationality"/>
+                                <field name="passport_number"/>
+                                <field name="passport_expiry_date"/>
+                                <field name="id_number"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_contractor_job_order_kanban" model="ir.ui.view"><field name="name">contractor.job.order.kanban</field><field name="model">contractor.job.order</field><field name="arch" type="xml"><kanban default_group_by="state"><templates><t t-name="card"><field name="name"/><field name="contractor_id"/><field name="project_id"/><field name="total_amount"/></t></templates></kanban></field></record>
+    <record id="view_contractor_job_order_calendar" model="ir.ui.view"><field name="name">contractor.job.order.calendar</field><field name="model">contractor.job.order</field><field name="arch" type="xml"><calendar date_start="start_date" date_stop="end_date" color="state"><field name="name"/><field name="contractor_id"/></calendar></field></record>
+
+    <record id="view_contractor_job_order_search" model="ir.ui.view">
+        <field name="name">contractor.job.order.search</field>
+        <field name="model">contractor.job.order</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/><field name="contractor_id"/><field name="purchase_order_id"/><field name="project_id"/>
+                <filter name="filter_draft" string="Draft" domain="[('state','=','draft')]"/>
+                <filter name="filter_active" string="Active" domain="[('state','=','active')]"/>
+                <group expand="1" string="Group By"><filter string="State" context="{'group_by':'state'}"/><filter string="Contractor" context="{'group_by':'contractor_id'}"/></group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_contractor_job_order" model="ir.actions.act_window">
+        <field name="name">Job Orders</field><field name="res_model">contractor.job.order</field><field name="view_mode">tree,form,kanban,calendar</field><field name="search_view_id" ref="view_contractor_job_order_search"/>
+    </record>
+</odoo>

@@ -1,0 +1,21 @@
+{
+    "name": "Contractor Job Orders",
+    "version": "19.0.1.0.0",
+    "summary": "Manage contractor job orders integrated with Purchase and Projects",
+    "category": "Purchases",
+    "author": "Custom",
+    "license": "LGPL-3",
+    "depends": ["purchase", "project", "contacts", "mail", "account", "hr"],
+    "data": [
+        "security/job_order_security.xml",
+        "security/ir.model.access.csv",
+        "data/sequence_data.xml",
+        "views/contractor_job_order_views.xml",
+        "views/purchase_order_views.xml",
+        "views/res_partner_views.xml",
+        "views/project_views.xml",
+        "views/menu_views.xml",
+    ],
+    "installable": True,
+    "application": True,
+}
