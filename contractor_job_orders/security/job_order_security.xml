@@ -1,22 +1,27 @@
 <odoo>
+    <record id="module_category_contractor_job_orders" model="ir.module.category">
+        <field name="name">Contractor Job Orders</field>
+        <field name="sequence">25</field>
+    </record>
+
     <record id="group_job_order_user" model="res.groups">
         <field name="name">Job Order User</field>
-        <field name="category_id" ref="base.module_category_services_management"/>
+        <field name="category_id" ref="contractor_job_orders.module_category_contractor_job_orders"/>
     </record>
     <record id="group_job_order_manager" model="res.groups">
         <field name="name">Job Order Manager</field>
         <field name="implied_ids" eval="[(4, ref('contractor_job_orders.group_job_order_user'))]"/>
-        <field name="category_id" ref="base.module_category_services_management"/>
+        <field name="category_id" ref="contractor_job_orders.module_category_contractor_job_orders"/>
     </record>
     <record id="group_job_order_finance" model="res.groups">
         <field name="name">Job Order Finance</field>
         <field name="implied_ids" eval="[(4, ref('contractor_job_orders.group_job_order_user'))]"/>
-        <field name="category_id" ref="base.module_category_services_management"/>
+        <field name="category_id" ref="contractor_job_orders.module_category_contractor_job_orders"/>
     </record>
     <record id="group_job_order_hr" model="res.groups">
         <field name="name">Job Order HR</field>
         <field name="implied_ids" eval="[(4, ref('contractor_job_orders.group_job_order_user'))]"/>
-        <field name="category_id" ref="base.module_category_services_management"/>
+        <field name="category_id" ref="contractor_job_orders.module_category_contractor_job_orders"/>
     </record>
 
     <record id="contractor_job_order_rule_user" model="ir.rule">
