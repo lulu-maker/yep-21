@@ -1,0 +1,9 @@
+<odoo>
+    <record id="seq_contractor_job_order" model="ir.sequence">
+        <field name="name">Contractor Job Order</field>
+        <field name="code">contractor.job.order</field>
+        <field name="prefix">JO/%(year)s/</field>
+        <field name="padding">5</field>
+        <field name="company_id" eval="False"/>
+    </record>
+</odoo>

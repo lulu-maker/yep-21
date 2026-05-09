@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_job_order_user,access.job.order.user,model_contractor_job_order,contractor_job_orders.group_job_order_user,1,1,1,0
+access_job_order_manager,access.job.order.manager,model_contractor_job_order,contractor_job_orders.group_job_order_manager,1,1,1,1
+access_job_order_finance,access.job.order.finance,model_contractor_job_order,contractor_job_orders.group_job_order_finance,1,0,0,0
+access_job_order_hr,access.job.order.hr,model_contractor_job_order,contractor_job_orders.group_job_order_hr,1,0,0,0
+access_purchase_order_contractor_line_user,access.purchase.order.contractor.line.user,model_purchase_order_contractor_line,contractor_job_orders.group_job_order_user,1,1,1,0
+access_purchase_order_contractor_line_manager,access.purchase.order.contractor.line.manager,model_purchase_order_contractor_line,contractor_job_orders.group_job_order_manager,1,1,1,1

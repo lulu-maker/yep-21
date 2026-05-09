@@ -1,0 +1,7 @@
+<odoo>
+    <menuitem id="menu_contractor_job_orders_root" name="Contractor Job Orders" sequence="10"/>
+    <menuitem id="menu_contractor_job_orders" name="Job Orders" parent="menu_contractor_job_orders_root" action="action_contractor_job_order" sequence="10"/>
+    <menuitem id="menu_contractor_job_orders_contractors" name="Contractors" parent="menu_contractor_job_orders_root" action="contacts.action_contacts" sequence="20"/>
+    <menuitem id="menu_contractor_job_orders_reports" name="Reports" parent="menu_contractor_job_orders_root" sequence="30"/>
+    <menuitem id="menu_contractor_job_orders_config" name="Configuration" parent="menu_contractor_job_orders_root" sequence="40" groups="contractor_job_orders.group_job_order_manager"/>
+</odoo>
